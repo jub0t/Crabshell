@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+service Wallet {
+    rpc startBot (StartBotRequest) returns (StartBotResponse);
+};
+
+message StartBotRequest {
+    
+};
+
+message StartBotResponse {
+    bool success = 1;
+};
