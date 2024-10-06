@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-service Wallet {
+service Bot {
     rpc startBot (StartBotRequest) returns (StartBotResponse);
 }
 
