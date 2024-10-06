@@ -1,7 +1,9 @@
 pub mod bot;
 pub mod core;
-pub mod errors;
+pub mod utils;
 
 fn main() {
-    loop {}
+    // Let's start the gRPC("core") client for out-going and in-coming communications.
+    core::start();
+    utils::process::prevent_death();
 }

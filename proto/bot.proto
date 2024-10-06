@@ -2,12 +2,12 @@ syntax = "proto3";
 
 service Wallet {
     rpc startBot (StartBotRequest) returns (StartBotResponse);
-};
+}
 
 message StartBotRequest {
-    
-};
+    string bot_id = 1;
+}
 
 message StartBotResponse {
     bool success = 1;
-};
+}

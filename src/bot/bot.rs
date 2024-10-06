@@ -1,7 +1,12 @@
 use std::io::{BufRead, BufReader};
 use std::process::{Child, Command, Stdio};
 use std::sync::{Arc, Mutex};
-use std::{fmt, fs, thread};
+use std::{fs, thread};
+
+use crate::bot::io::IndependantIO;
+use crate::utils::thead::to_arc_mutex;
+
+use super::manager::BotEngine;
 
 pub enum BotStatus {
     Running,
@@ -16,6 +21,7 @@ pub struct Bot {
 
     // Option<String> for now i guess.
     pub absolute_path: Option<String>,
+    pub engine: BotEngine,
 
     pub status: BotStatus,
 }
@@ -24,6 +30,7 @@ impl Bot {
     pub fn new(name: &str) -> Self {
         Bot {
             name: name.to_string(),
+            engine: BotEngine::Node,
             status: BotStatus::None,
             absolute_path: None,
             process: None,
@@ -46,7 +53,6 @@ impl Bot {
     // Start the bot process
     pub fn start(
         &mut self,
-        node_version: Option<String>,
         arguments: Vec<String>, // TODO: maybe we can use a better data type?
     ) -> std::io::Result<()> {
         if self.absolute_path == None {
@@ -55,18 +61,17 @@ impl Bot {
         }
 
         if self.process.is_none() {
-            let mut child = Command::new("node");
+            let engine_cmd = match self.engine {
+                BotEngine::Bun => "bun",
+                BotEngine::Node => "node",
+                BotEngine::Deno => "deno",
+            };
+
+            let mut child = Command::new(engine_cmd);
 
             // Add all arguments
             for arg in arguments {
                 child.arg(arg);
-            }
-
-            match node_version {
-                None => {}
-                Some(version) => {
-                    // Make it use the "{version}" Version
-                }
             }
 
             let mut spawned = child
@@ -75,30 +80,12 @@ impl Bot {
                 .spawn()?;
 
             let stdout = spawned.stdout.take().unwrap();
+            let safe_out = to_arc_mutex(stdout);
+
             let stderr = spawned.stderr.take().unwrap();
-            let bot_name = Arc::new(Mutex::new(self.name.clone()));
+            let safe_err = to_arc_mutex(stderr);
 
-            // Capture stdout in a separate thread
-            let shared_bot_name = Arc::clone(&bot_name); // Clone Arc for stdout thread
-            thread::spawn(move || {
-                let stdout_reader = BufReader::new(stdout);
-                for line in stdout_reader.lines() {
-                    let line = line.unwrap(); // Handle errors properly in a production environment
-                    let bot_name = shared_bot_name.lock().unwrap(); // Lock the mutex before accessing the bot name
-                    println!("{} stdout: {}", *bot_name, line); // Use * to dereference the MutexGuard
-                }
-            });
-
-            // Capture stderr in a separate thread
-            let shared_bot_name = Arc::clone(&bot_name); // Clone Arc for stderr thread
-            thread::spawn(move || {
-                let stderr_reader = BufReader::new(stderr);
-                for line in stderr_reader.lines() {
-                    let line = line.unwrap(); // Handle errors properly in a production environment
-                    let bot_name = shared_bot_name.lock().unwrap(); // Lock the mutex before accessing the bot name
-                    eprintln!("{} stderr: {}", *bot_name, line); // Use * to dereference the MutexGuard
-                }
-            });
+            let bot_io = IndependantIO::new(safe_out, safe_err);
 
             self.process = Some(spawned);
             println!("Bot {} started", self.name);

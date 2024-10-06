@@ -3,21 +3,26 @@ use std::io::Result;
 use std::sync::{Arc, Mutex};
 
 use super::bot::Bot;
+use super::config::ManagerConfig;
+
+pub enum BotEngine {
+    Bun = 1,
+    Deno = 2,
+    Node = 3,
+}
 
 pub struct BotManager {
-    bots: HashMap<String, Bot>,
-
-    // Fallback node version if none is provided
-    pub prefered_node_version: String,
+    pub config: ManagerConfig,
+    pub bots: HashMap<String, Bot>,
 }
 
 pub type SharedBotManager = Arc<Mutex<BotManager>>;
 
 impl BotManager {
-    pub fn new() -> Self {
+    pub fn new(config: ManagerConfig) -> Self {
         BotManager {
             bots: HashMap::new(),
-            prefered_node_version: "18.17.0".to_string(),
+            config: ManagerConfig::new(),
         }
     }
 
@@ -29,19 +34,19 @@ impl BotManager {
         }
 
         let mut bot = Bot::new(name);
-        bot.start(Some(self.prefered_node_version.clone()), Vec::new())?;
+        bot.start(Vec::new())?;
         self.bots.insert(name.to_string(), bot);
 
         Ok(())
     }
 
     // Start a bot
-    pub fn start(&mut self, name: &str) -> Result<()> {
-        if let Some(bot) = self.bots.get_mut(name) {
-            bot.start(Some(self.prefered_node_version.clone()), Vec::new())?;
-        // Replace with the actual path
+    pub fn start(&mut self, id: &str) -> Result<()> {
+        if let Some(bot) = self.bots.get_mut(id) {
+            bot.start(Vec::new())?;
+            // Replace with the actual path
         } else {
-            println!("Bot {} not found", name);
+            println!("Bot {} not found", id);
         }
 
         Ok(())
