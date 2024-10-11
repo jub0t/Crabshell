@@ -1,30 +1,36 @@
-use std::{process::exit, thread, time::Duration};
-
+use bot::{StartRequest, StartResponse};
 use tonic::{transport::Server, Request, Response, Status};
 
-use bot::{StartRequest, StartResponse};
-
-#[derive(Debug, Default)]
-pub struct MyGreeter {}
-
-#[tonic::async_trait]
-impl A for MyGreeter {
-    async fn say_hello(
-        &self,
-        request: Request<StartRequest>, // Accept request of type HelloRequest
-    ) -> Result<Response<StartResponse>, Status> {
-        println!("Got a request: {:?}", request);
-
-        let reply = StartResponse { success: true };
-
-        Ok(Response::new(reply)) // Send back our formatted greeting
-    }
-}
+use bot::application_server::{Application, ApplicationServer};
 
 pub mod bot {
     tonic::include_proto!("bot"); // The string specified here must match the proto package name
 }
 
-pub fn start() {
-    let _t = thread::spawn(move || {});
+#[derive(Debug, Default)]
+pub struct MyGreeter {}
+
+#[tonic::async_trait]
+impl Application for MyGreeter {
+    async fn start(
+        &self,
+        request: Request<StartRequest>,
+    ) -> Result<Response<StartResponse>, Status> {
+        println!("Got a request: {:?}", request);
+
+        let reply = StartResponse { success: true };
+        Ok(Response::new(reply))
+    }
+}
+
+pub async fn start() -> Result<(), Box<dyn std::error::Error>> {
+    let addr = "127.0.0.1:50051".parse()?;
+    let greeter = MyGreeter::default();
+
+    Server::builder()
+        .add_service(ApplicationServer::new(greeter))
+        .serve(addr)
+        .await?;
+
+    Ok(())
 }
