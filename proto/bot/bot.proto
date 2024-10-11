@@ -1,13 +1,14 @@
 syntax = "proto3";
+package bot;
 
 service Bot {
-    rpc startBot (StartBotRequest) returns (StartBotResponse);
+    rpc StartBot (StartRequest) returns (StartResponse);
 }
 
-message StartBotRequest {
+message StartRequest {
     string bot_id = 1;
 }
 
-message StartBotResponse {
+message StartResponse {
     bool success = 1;
 }
