@@ -1,14 +1,14 @@
-const protoLoader = require('@grpc/proto-loader');
-const grpc = require('@grpc/grpc-js');
-const express = require('express');
-const path = require('path');
+import protoLoader from '@grpc/proto-loader';
+import grpc from '@grpc/grpc-js';
+import express from 'express';
+import path from 'path';
 const app = express();
 
 // Load the .proto files and define package
 const packageDefinition = protoLoader.loadSync([
-    path.resolve('../proto/bot.proto'),
     path.resolve('../proto/broadcast.proto'),  // The broadcast proto for Subscribe
-    path.resolve('../proto/echo.proto')
+    path.resolve('../proto/echo.proto'),
+    path.resolve('../proto/bot.proto'),
 ], {
     keepCase: true,
     longs: String,
@@ -51,12 +51,13 @@ app.get('/', (req, res) => {
     botClient.Start(request, (error: any, response: any) => {
         if (!error) {
             res.json({
+                success: true,
                 time: new Date().getTime() - start.getTime(),  // Return time taken for request
                 data: response  // Response from gRPC server
             });
         } else {
             console.error('Error:', error);
-            res.status(500).json({ error: error.message });
+            res.status(500).json({ success: false, error: error.code });
         }
     });
 });

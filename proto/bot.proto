@@ -3,6 +3,17 @@ package bot;
 
 service Application {
     rpc Start (StartRequest) returns (StartResponse);
+    rpc ListAll (ListRequest) returns (ListResponse);
+}
+
+message ListRequest {}
+
+message BotInfo {
+    string id = 1;
+}
+
+message ListResponse {
+    repeated BotInfo data = 1; 
 }
 
 message StartRequest {
