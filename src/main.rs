@@ -1,4 +1,5 @@
 pub mod bot;
+pub mod cache;
 pub mod core;
 pub mod utils;
 

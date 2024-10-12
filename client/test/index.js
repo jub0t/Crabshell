@@ -1,11 +1,10 @@
-const grpc = require('@grpc/grpc-js');
 const protoLoader = require('@grpc/proto-loader');
+const grpc = require('@grpc/grpc-js');
+const express = require("express")
 const path = require('path');
+const app = express()
 
-// Use path.resolve to define the path to the proto file relative to the current file
 const PROTO_PATH = path.resolve('../proto/bot/bot.proto');
-
-// Load the proto file
 const packageDefinition = protoLoader.loadSync(PROTO_PATH, {
     keepCase: true,
     longs: String,
@@ -15,19 +14,26 @@ const packageDefinition = protoLoader.loadSync(PROTO_PATH, {
 });
 
 const botProto = grpc.loadPackageDefinition(packageDefinition).bot;
-
-// Create a gRPC client
 const client = new botProto.Application('localhost:50051', grpc.credentials.createInsecure());
 
-// Make a request
-const request = {
-    bot_id: '12345'
-};
+app.get("/", (req, res) => {
+    const start = new Date();
+    const request = {
+        bot_id: '12345'
+    };
 
-client.Start(request, (error, response) => {
-    if (!error) {
-        console.log('Response:', response);
-    } else {
-        console.error('Error:', error);
-    }
-});
+    client.Start(request, (error, response) => {
+        if (!error) {
+            res.json({
+                time: new Date() - start,
+                data: response
+            })
+        } else {
+            console.error('Error:', error);
+        }
+    });
+})
+
+app.listen(9291, function () {
+    console.log(`Live at http://127.0.0.1:9291`)
+})

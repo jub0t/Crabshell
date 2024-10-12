@@ -1,19 +1,41 @@
 use std::io::{BufRead, BufReader};
 use std::process::{ChildStderr, ChildStdout};
+use std::sync::mpsc::{Receiver, Sender};
 use std::sync::{Arc, Mutex};
-use std::thread;
+use std::thread::{self};
+
+use super::bot::BotId;
 
 pub type SafeOut = Arc<Mutex<ChildStdout>>;
 pub type SafeErr = Arc<Mutex<ChildStderr>>;
 
+pub enum IoDataType {
+    Err,
+    Out,
+    None,
+}
+pub struct IoData {
+    io_type: IoDataType,
+    bot_id: BotId,
+    data: Vec<u8>,
+}
+
+pub type SafeIoSender = Arc<Mutex<Sender<IoData>>>;
+pub type SafeIoReceiver = Arc<Mutex<Receiver<IoData>>>;
+
 pub struct IndependantIO {
     pub std_out: SafeOut,
     pub std_err: SafeErr,
+    pub io_sender: SafeIoSender,
 }
 
 impl IndependantIO {
-    pub fn new(std_out: SafeOut, std_err: SafeErr) -> Self {
-        Self { std_out, std_err }
+    pub fn new(std_out: SafeOut, std_err: SafeErr, io_sender: SafeIoSender) -> Self {
+        Self {
+            std_out,
+            std_err,
+            io_sender,
+        }
     }
 
     pub fn activate(&self) {
@@ -27,7 +49,7 @@ impl IndependantIO {
             for line in stdout_reader.lines() {
                 match line {
                     Ok(content) => {
-                        // Loginc to implement out
+                        // Logic to implement out
                     }
                     Err(e) => {
                         // Login to handle Error

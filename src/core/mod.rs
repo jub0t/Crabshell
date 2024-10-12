@@ -8,16 +8,14 @@ pub mod bot {
 }
 
 #[derive(Debug, Default)]
-pub struct MyGreeter {}
+pub struct MyApplication {}
 
 #[tonic::async_trait]
-impl Application for MyGreeter {
+impl Application for MyApplication {
     async fn start(
         &self,
         request: Request<StartRequest>,
     ) -> Result<Response<StartResponse>, Status> {
-        println!("Got a request: {:?}", request);
-
         let reply = StartResponse { success: true };
         Ok(Response::new(reply))
     }
@@ -25,7 +23,7 @@ impl Application for MyGreeter {
 
 pub async fn start() -> Result<(), Box<dyn std::error::Error>> {
     let addr = "127.0.0.1:50051".parse()?;
-    let greeter = MyGreeter::default();
+    let greeter = MyApplication::default();
 
     Server::builder()
         .add_service(ApplicationServer::new(greeter))

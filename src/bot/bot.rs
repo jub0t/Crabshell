@@ -1,11 +1,10 @@
-use std::io::{BufRead, BufReader};
+use std::fs;
 use std::process::{Child, Command, Stdio};
-use std::sync::{Arc, Mutex};
-use std::{fs, thread};
 
 use crate::bot::io::IndependantIO;
 use crate::utils::thead::to_arc_mutex;
 
+use super::io::SafeIoSender;
 use super::manager::BotEngine;
 
 pub enum BotStatus {
@@ -14,6 +13,8 @@ pub enum BotStatus {
     Paused,
     None,
 }
+
+pub type BotId = String;
 
 pub struct Bot {
     pub name: String,
@@ -24,6 +25,10 @@ pub struct Bot {
     pub engine: BotEngine,
 
     pub status: BotStatus,
+}
+
+pub struct StartBotOptions {
+    pub io_sender: SafeIoSender,
 }
 
 impl Bot {
@@ -54,6 +59,7 @@ impl Bot {
     pub fn start(
         &mut self,
         arguments: Vec<String>, // TODO: maybe we can use a better data type?
+        options: StartBotOptions,
     ) -> std::io::Result<()> {
         if self.absolute_path == None {
             // TODO: Implement an error for this.
@@ -63,8 +69,8 @@ impl Bot {
         if self.process.is_none() {
             let engine_cmd = match self.engine {
                 BotEngine::Bun => "bun",
-                BotEngine::Node => "node",
                 BotEngine::Deno => "deno",
+                BotEngine::Node => "node",
             };
 
             let mut child = Command::new(engine_cmd);
@@ -85,7 +91,8 @@ impl Bot {
             let stderr = spawned.stderr.take().unwrap();
             let safe_err = to_arc_mutex(stderr);
 
-            let bot_io = IndependantIO::new(safe_out, safe_err);
+            let bot_io = IndependantIO::new(safe_out, safe_err, options.io_sender);
+            bot_io.activate();
 
             self.process = Some(spawned);
             println!("Bot {} started", self.name);

@@ -1,9 +1,13 @@
 use std::collections::HashMap;
 use std::io::Result;
+use std::sync::mpsc::channel;
 use std::sync::{Arc, Mutex};
 
-use super::bot::Bot;
+use crate::utils::thead::to_arc_mutex;
+
+use super::bot::{Bot, StartBotOptions};
 use super::config::ManagerConfig;
+use super::io::{SafeIoReceiver, SafeIoSender};
 
 pub enum BotEngine {
     Bun = 1,
@@ -14,15 +18,20 @@ pub enum BotEngine {
 pub struct BotManager {
     pub config: ManagerConfig,
     pub bots: HashMap<String, Bot>,
+    pub stdout_sender: SafeIoSender,
+    pub stdout_receiver: SafeIoReceiver,
 }
 
 pub type SharedBotManager = Arc<Mutex<BotManager>>;
 
 impl BotManager {
     pub fn new(config: ManagerConfig) -> Self {
+        let (sender, receiver) = channel();
         BotManager {
             bots: HashMap::new(),
             config: ManagerConfig::new(),
+            stdout_sender: to_arc_mutex(sender),
+            stdout_receiver: to_arc_mutex(receiver),
         }
     }
 
@@ -34,7 +43,12 @@ impl BotManager {
         }
 
         let mut bot = Bot::new(name);
-        bot.start(Vec::new())?;
+        bot.start(
+            Vec::new(),
+            StartBotOptions {
+                io_sender: self.stdout_sender.clone(),
+            },
+        )?;
         self.bots.insert(name.to_string(), bot);
 
         Ok(())
@@ -43,7 +57,12 @@ impl BotManager {
     // Start a bot
     pub fn start(&mut self, id: &str) -> Result<()> {
         if let Some(bot) = self.bots.get_mut(id) {
-            bot.start(Vec::new())?;
+            bot.start(
+                Vec::new(),
+                StartBotOptions {
+                    io_sender: self.stdout_sender.clone(),
+                },
+            )?;
             // Replace with the actual path
         } else {
             println!("Bot {} not found", id);
