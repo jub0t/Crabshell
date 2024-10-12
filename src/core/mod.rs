@@ -1,7 +1,6 @@
+use bot::application_server::{Application, ApplicationServer};
 use bot::{StartRequest, StartResponse};
 use tonic::{transport::Server, Request, Response, Status};
-
-use bot::application_server::{Application, ApplicationServer};
 
 pub mod bot {
     tonic::include_proto!("bot"); // The string specified here must match the proto package name
