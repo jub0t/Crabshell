@@ -1,4 +1,5 @@
 syntax = "proto3";
+
 package broadcast;
 
 // Define the message structure for the broadcast
@@ -11,5 +12,6 @@ message Empty {}
 
 // The broadcast service definition
 service BroadcastService {
+  // Server-side streaming to send multiple messages
   rpc Subscribe (Empty) returns (stream BroadcastMessage);
 }
