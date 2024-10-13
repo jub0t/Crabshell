@@ -29,7 +29,7 @@ impl BotManager {
         let (sender, receiver) = channel();
         BotManager {
             bots: HashMap::new(),
-            config: ManagerConfig::new(),
+            config: config,
             stdout_sender: to_arc_mutex(sender),
             stdout_receiver: to_arc_mutex(receiver),
         }

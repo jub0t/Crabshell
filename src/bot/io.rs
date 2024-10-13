@@ -9,15 +9,18 @@ use super::bot::BotId;
 pub type SafeOut = Arc<Mutex<ChildStdout>>;
 pub type SafeErr = Arc<Mutex<ChildStderr>>;
 
+#[derive(Debug, Clone, Copy)]
 pub enum IoDataType {
     Err,
     Out,
     None,
 }
+
+#[derive(Debug, Clone)]
 pub struct IoData {
-    io_type: IoDataType,
-    bot_id: BotId,
-    data: Vec<u8>,
+    pub io_type: IoDataType,
+    pub bot_id: BotId,
+    pub data: Vec<u8>,
 }
 
 pub type SafeIoSender = Arc<Mutex<Sender<IoData>>>;
