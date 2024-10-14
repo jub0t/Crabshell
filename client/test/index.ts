@@ -7,7 +7,6 @@ const app = express();
 // Load the .proto files and define package
 const packageDefinition = protoLoader.loadSync([
     path.resolve('../proto/broadcast.proto'),  // The broadcast proto for Subscribe
-    path.resolve('../proto/echo.proto'),
     path.resolve('../proto/bot.proto'),
 ], {
     keepCase: true,
@@ -48,12 +47,12 @@ app.get('/', (req, res) => {
     };
 
     // gRPC Unary call to Start in the bot service
-    botClient.Start(request, (error: any, response: any) => {
+    botClient.ListAll(request, (error: any, response: any) => {
         if (!error) {
             res.json({
                 success: true,
                 time: new Date().getTime() - start.getTime(),  // Return time taken for request
-                data: response  // Response from gRPC server
+                data: response.data  // Response from gRPC server
             });
         } else {
             console.error('Error:', error);

@@ -17,6 +17,7 @@ pub enum BotStatus {
 pub type BotId = String;
 
 pub struct Bot {
+    pub id: BotId,
     pub name: String,
     pub process: Option<Child>,
 
@@ -34,6 +35,7 @@ pub struct StartBotOptions {
 impl Bot {
     pub fn new(name: &str) -> Self {
         Bot {
+            id: "".to_string(),
             name: name.to_string(),
             engine: BotEngine::Node,
             status: BotStatus::None,

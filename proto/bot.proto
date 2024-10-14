@@ -10,6 +10,7 @@ message ListRequest {}
 
 message BotInfo {
     string id = 1;
+    string name = 2;
 }
 
 message ListResponse {

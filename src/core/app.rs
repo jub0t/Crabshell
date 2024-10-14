@@ -8,10 +8,10 @@ use tonic::{transport::Server, Request, Response, Status};
 use crate::bot::manager::SharedBotManager;
 
 use super::bot::application_server::Application;
-use super::bot::{ListRequest, ListResponse, StartRequest, StartResponse};
+use super::bot::{self, BotInfo, ListRequest, ListResponse, StartRequest, StartResponse};
 
 pub struct MyApplication {
-    bot_manager: SharedBotManager, // Add this field
+    pub bot_manager: SharedBotManager, // Add this field
 }
 
 impl MyApplication {
@@ -35,10 +35,22 @@ impl Application for MyApplication {
         &self,
         _request: Request<ListRequest>,
     ) -> Result<Response<ListResponse>, Status> {
-        let reply = ListResponse {
-            ..Default::default()
-        };
+        // TODO: A LOT of optimizations and code improvements can be made here.
+        println!("requested ListAll bots");
+        let man = self.bot_manager.clone();
+        let a = man.lock().unwrap();
+        let bots = &a.bots;
 
+        let mut bots_data = Vec::new();
+        for bot in bots.iter() {
+            let info = bot.1;
+            bots_data.push(BotInfo {
+                id: info.id.clone(),
+                name: info.name.clone(),
+            });
+        }
+
+        let reply = ListResponse { data: bots_data };
         Ok(Response::new(reply))
     }
 }
