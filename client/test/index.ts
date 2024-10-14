@@ -61,7 +61,7 @@ app.get('/', (req, res) => {
     });
 });
 
-// Start Express server
-app.listen(9291, function () {
-    console.log(`Live at http://127.0.0.1:9291`);
+const random_port = Math.floor(Math.random() * 40000) + 2048
+app.listen(random_port, function () {
+    console.log(`Live at http://127.0.0.1:${random_port}`);
 });

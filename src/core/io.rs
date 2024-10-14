@@ -51,8 +51,10 @@ impl BroadcastService for MyBroadcastService {
                     }
 
                     Ok(io) => {
-                        println!("{:#?}", io.data);
+                        // TODO: implement proper broadcasting back to the listener.
+                        println!("[DEBUG] I/O Data: {:#?}", io.data);
                         // io.data = Vec<u8>
+
                         BroadcastMessage::default();
                         tx.send(Ok(BroadcastMessage {
                             message: String::from_utf8_lossy(&io.data).to_string(),
