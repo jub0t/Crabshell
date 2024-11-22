@@ -39,6 +39,9 @@ call.on('error', (e) => {
     console.error('Error:', e.message);
 });
 
+app.get("/create-dummy", (req, res) => {
+})
+
 // HTTP Route for Start Request (bot service)
 app.get('/', (req, res) => {
     const start = new Date();

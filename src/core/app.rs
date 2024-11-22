@@ -8,7 +8,10 @@ use tonic::{transport::Server, Request, Response, Status};
 use crate::bot::manager::SharedBotManager;
 
 use super::bot::application_server::Application;
-use super::bot::{self, BotInfo, ListRequest, ListResponse, StartRequest, StartResponse};
+use super::bot::{
+    self, BotInfo, CreateBotRequest, CreateBotResponse, ListRequest, ListResponse, StartRequest,
+    StartResponse,
+};
 
 pub struct MyApplication {
     pub bot_manager: SharedBotManager, // Add this field
@@ -52,5 +55,12 @@ impl Application for MyApplication {
 
         let reply = ListResponse { data: bots_data };
         Ok(Response::new(reply))
+    }
+
+    async fn create_bot(
+        &self,
+        _request: Request<CreateBotRequest>,
+    ) -> Result<Response<CreateBotResponse>, Status> {
+        Ok(Response::new(CreateBotResponse::default()))
     }
 }

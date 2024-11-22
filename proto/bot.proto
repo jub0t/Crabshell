@@ -4,6 +4,17 @@ package bot;
 service Application {
     rpc Start (StartRequest) returns (StartResponse);
     rpc ListAll (ListRequest) returns (ListResponse);
+    rpc CreateBot (CreateBotRequest) returns (CreateBotResponse);
+}
+
+message CreateBotRequest {
+    string name = 1;
+    string engine = 2;
+    string absolute_path = 3;
+}
+
+message CreateBotResponse {
+    string id = 1;
 }
 
 message ListRequest {}
