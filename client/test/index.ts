@@ -61,17 +61,10 @@ app.get("/create-dummy", (req, res) => {
 
 // HTTP Route for Start Request (bot service)
 app.get('/', (req, res) => {
-    const start = new Date();
-    const request = {
-        bot_id: '12345'  // Send bot_id or any necessary request parameters
-    };
-
-    // gRPC Unary call to Start in the bot service
-    botClient.ListAll(request, (error: any, response: any) => {
+    botClient.ListAll({}, (error: any, response: any) => {
         if (!error) {
             res.json({
                 success: true,
-                time: new Date().getTime() - start.getTime(),  // Return time taken for request
                 data: response.data  // Response from gRPC server
             });
         } else {
