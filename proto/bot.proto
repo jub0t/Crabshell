@@ -9,8 +9,7 @@ service Application {
 
 message CreateBotRequest {
     string name = 1;
-    string engine = 2;
-    string absolute_path = 3;
+    int32 engine = 2;
 }
 
 message CreateBotResponse {

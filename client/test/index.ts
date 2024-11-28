@@ -40,6 +40,23 @@ call.on('error', (e) => {
 });
 
 app.get("/create-dummy", (req, res) => {
+    const start = new Date();
+
+    botClient.CreateBot({
+        name: "",
+        engine: 1,
+    }, (error: any, response: any) => {
+        if (!error) {
+            return res.json({
+                success: true,
+                time: new Date().getTime() - start.getTime(),  // Return time taken for request
+                data: response.data  // Response from gRPC server
+            })
+        } else {
+            console.error('Error:', error);
+            res.status(500).json({ success: false, error: error.code });
+        }
+    })
 })
 
 // HTTP Route for Start Request (bot service)
@@ -64,7 +81,7 @@ app.get('/', (req, res) => {
     });
 });
 
-const random_port = Math.floor(Math.random() * 40000) + 2048
+const random_port = 7200;
 app.listen(random_port, function () {
     console.log(`Live at http://127.0.0.1:${random_port}`);
 });

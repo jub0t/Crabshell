@@ -1,15 +1,10 @@
-use std::pin::Pin;
-use std::sync::{Arc, Mutex};
-use tokio::sync::mpsc::channel;
-use tokio_stream::wrappers::ReceiverStream;
-use tokio_stream::Stream;
-use tonic::{transport::Server, Request, Response, Status};
+use tonic::{Request, Response, Status};
 
 use crate::bot::manager::SharedBotManager;
 
 use super::bot::application_server::Application;
 use super::bot::{
-    self, BotInfo, CreateBotRequest, CreateBotResponse, ListRequest, ListResponse, StartRequest,
+    BotInfo, CreateBotRequest, CreateBotResponse, ListRequest, ListResponse, StartRequest,
     StartResponse,
 };
 
@@ -39,7 +34,7 @@ impl Application for MyApplication {
         _request: Request<ListRequest>,
     ) -> Result<Response<ListResponse>, Status> {
         // TODO: A LOT of optimizations and code improvements can be made here.
-        println!("requested ListAll bots");
+        println!("Requested 'ListAll'");
         let man = self.bot_manager.clone();
         let a = man.lock().unwrap();
         let bots = &a.bots;
@@ -59,8 +54,21 @@ impl Application for MyApplication {
 
     async fn create_bot(
         &self,
-        _request: Request<CreateBotRequest>,
+        request: Request<CreateBotRequest>,
     ) -> Result<Response<CreateBotResponse>, Status> {
-        Ok(Response::new(CreateBotResponse::default()))
+        let man = self.bot_manager.clone();
+        let mut a = man.lock().unwrap();
+
+        let data = request.get_ref();
+        match a.add(&data.name) {
+            Err(e) => {
+                println!("{:#?}", e);
+                return Ok(Response::new(CreateBotResponse::default()));
+            }
+            Ok(data) => {
+                println!("{:#?}", data);
+                return Ok(Response::new(CreateBotResponse::default()));
+            }
+        };
     }
 }
