@@ -6,12 +6,13 @@ const app = express();
 
 // Load the .proto files and define package
 const packageDefinition = protoLoader.loadSync([
-    path.resolve('../proto/broadcast.proto'),  // The broadcast proto for Subscribe
+    path.resolve('../proto/broadcast.proto'),
+    path.resolve('../proto/system.proto'),
     path.resolve('../proto/bot.proto'),
 ], {
-    keepCase: true,
     longs: String,
     enums: String,
+    keepCase: true,
     defaults: true,
     oneofs: true
 });
@@ -25,7 +26,7 @@ const botClient = new protoBot.Application('localhost:50051', grpc.credentials.c
 const broadcastClient = new protoBroadcast.BroadcastService('localhost:50051', grpc.credentials.createInsecure());  // Use broadcast service client
 
 // Subscribe to broadcast messages from the server (broadcast service)
-const call = broadcastClient.Subscribe({});  // Call Subscribe from broadcast package
+const call = broadcastClient.Subscribe({});
 
 call.on('data', (response: { message: string }) => {
     console.log('Received:', response.message);
@@ -43,7 +44,7 @@ app.get("/create-dummy", (req, res) => {
     const start = new Date();
 
     botClient.CreateBot({
-        name: "",
+        name: "Master Machine",
         engine: 1,
     }, (error: any, response: any) => {
         if (!error) {

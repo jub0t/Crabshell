@@ -1,5 +1,7 @@
 class Cancala {
-    createBot() { }
+    createBot() {
+
+    }
 };
 
 export default Cancala;

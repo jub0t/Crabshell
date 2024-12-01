@@ -45,7 +45,7 @@ impl IndependantIO {
         let std_out_clone = Arc::clone(&self.std_out); // Clone the Arc to pass into the thread
 
         // Capture stdout in a separate thread
-        let t_out = thread::spawn(move || {
+        thread::spawn(move || {
             let mut out = std_out_clone.lock().unwrap(); // Lock the mutex and get mutable access to ChildStdout
             let stdout_reader = BufReader::new(&mut *out); // Pass a mutable reference to BufReader
 
@@ -53,8 +53,10 @@ impl IndependantIO {
                 match line {
                     Ok(content) => {
                         // Logic to implement out
+                        println!("{:#?}", content);
                     }
                     Err(e) => {
+                        println!("{:#?}", e);
                         // Login to handle Error
                     } // Handle errors properly
                 }
