@@ -1,5 +1,6 @@
 <div align="center">
-
+  <div style="width:60%">
+  
   <!-- Light theme logo (visible in light mode only) -->
   ![Light Theme Logo](./dark-logo.svg#gh-light-mode-only)
 
@@ -10,4 +11,5 @@
   <img alt="GitHub Created At" src="https://img.shields.io/github/created-at/jub0t/Cancala?style=flat">
   <img alt="GitHub repo size" src="https://img.shields.io/github/repo-size/jub0t/Cancala">
 
+  </div>
 </div>
