@@ -21,6 +21,9 @@ message ListRequest {}
 message BotInfo {
     string id = 1;
     string name = 2;
+    optional string absolute_path = 3;
+    uint32 status = 4;
+    string engine = 5;
 }
 
 message ListResponse {

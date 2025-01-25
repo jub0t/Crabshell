@@ -42,14 +42,17 @@ impl Application for MyApplication {
         let mut bots_data = Vec::new();
         for bot in bots.iter() {
             let info = bot.1;
+
             bots_data.push(BotInfo {
                 id: info.id.clone(),
                 name: info.name.clone(),
-                // process: info.process.iter().cloned(),
-                // status: info.status,
+                status: info.status.as_uint32(),
+                engine: info.engine.as_string(),
+                absolute_path: info.absolute_path.clone(),
             });
         }
 
+        println!("{:#?}", &bots_data);
         let reply = ListResponse { data: bots_data };
         Ok(Response::new(reply))
     }

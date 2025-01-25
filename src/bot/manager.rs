@@ -3,16 +3,39 @@ use std::io::Result;
 use std::sync::mpsc::channel;
 use std::sync::{Arc, Mutex};
 
+use serde::Serialize;
+
 use crate::utils::thead::to_arc_mutex;
 
 use super::bot::{Bot, StartBotOptions};
 use super::config::ManagerConfig;
 use super::io::{SafeIoReceiver, SafeIoSender};
 
+#[derive(Serialize)]
 pub enum BotEngine {
     Bun = 1,
     Deno = 2,
     Node = 3,
+    Golang = 4,
+}
+
+impl BotEngine {
+    pub fn as_string(&self) -> String {
+        match self {
+            Self::Bun => {
+                return "bun".to_string();
+            }
+            Self::Node => {
+                return "node".to_string();
+            }
+            Self::Deno => {
+                return "deno".to_string();
+            }
+            Self::Golang => {
+                return "golang".to_string();
+            }
+        }
+    }
 }
 
 pub struct BotManager {

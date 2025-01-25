@@ -1,3 +1,4 @@
+use serde::Serialize;
 use std::fs;
 use std::process::{Child, Command, Stdio};
 use uuid::Uuid;
@@ -8,11 +9,31 @@ use crate::utils::thead::to_arc_mutex;
 use super::io::SafeIoSender;
 use super::manager::BotEngine;
 
+#[derive(Serialize)]
 pub enum BotStatus {
-    Running,
-    Stopped,
-    Paused,
-    None,
+    Stopped = 0,
+    Running = 1,
+    Paused = 2,
+    None = 3,
+}
+
+impl BotStatus {
+    pub fn as_uint32(&self) -> u32 {
+        match self {
+            Self::Stopped => {
+                return 0;
+            }
+            Self::Running => {
+                return 1;
+            }
+            Self::Paused => {
+                return 2;
+            }
+            Self::None => {
+                return 3;
+            }
+        }
+    }
 }
 
 pub type BotId = String;
@@ -72,12 +93,7 @@ impl Bot {
         }
 
         if self.process.is_none() {
-            let engine_cmd = match self.engine {
-                BotEngine::Bun => "bun",
-                BotEngine::Deno => "deno",
-                BotEngine::Node => "node",
-            };
-
+            let engine_cmd = self.engine.as_string();
             let mut child = Command::new(engine_cmd);
 
             // Add all arguments

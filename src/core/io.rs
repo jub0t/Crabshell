@@ -56,7 +56,7 @@ impl BroadcastService for MyBroadcastService {
                         // io.data = Vec<u8>
 
                         BroadcastMessage::default();
-                        tx.send(Ok(BroadcastMessage {
+                        let _ = tx.send(Ok(BroadcastMessage {
                             message: String::from_utf8_lossy(&io.data).to_string(),
                         }));
                     }
