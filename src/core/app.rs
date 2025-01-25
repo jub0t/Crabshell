@@ -45,6 +45,8 @@ impl Application for MyApplication {
             bots_data.push(BotInfo {
                 id: info.id.clone(),
                 name: info.name.clone(),
+                // process: info.process.iter().cloned(),
+                // status: info.status,
             });
         }
 
