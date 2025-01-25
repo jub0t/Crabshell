@@ -23,12 +23,15 @@ impl BotStatus {
             Self::Stopped => {
                 return 0;
             }
+
             Self::Running => {
                 return 1;
             }
+
             Self::Paused => {
                 return 2;
             }
+
             Self::None => {
                 return 3;
             }
