@@ -37,13 +37,18 @@ call.on('end', () => {
 });
 
 call.on('error', (e) => {
-    console.error('Error:', e.message);
+    console.error('Error:', e);
+    // Connection broke from the server, reconnect?
+    if (e.code ==14){
+        // Reconnect logic
+    }
 });
 
 app.get("/create-dummy", (req, res) => {
     const start = new Date();
 
     botClient.CreateBot({
+        // id:"1",
         name: "Master Machine",
         engine: 1,
     }, (error: any, response: any) => {

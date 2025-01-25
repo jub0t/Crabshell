@@ -1,5 +1,6 @@
 use std::fs;
 use std::process::{Child, Command, Stdio};
+use uuid::Uuid;
 
 use crate::bot::io::IndependantIO;
 use crate::utils::thead::to_arc_mutex;
@@ -34,8 +35,10 @@ pub struct StartBotOptions {
 
 impl Bot {
     pub fn new(name: &str) -> Self {
+        let id = Uuid::new_v4();
+
         Bot {
-            id: "".to_string(),
+            id: id.to_string(),
             name: name.to_string(),
             engine: BotEngine::Node,
             status: BotStatus::None,
