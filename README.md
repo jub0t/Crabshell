@@ -14,3 +14,8 @@
 
   </div>
 </div>
+
+
+## About
+
+An open-source and self-hosted tool to manage, deploy, and host applications. The underlying engine for [jub0t/mechon](https://github.com/jub0t/mechon).
