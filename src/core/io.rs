@@ -1,4 +1,6 @@
 use std::pin::Pin;
+use std::thread::sleep;
+use std::time::Duration;
 use tokio::sync::mpsc::channel;
 use tokio_stream::wrappers::ReceiverStream;
 use tokio_stream::Stream;
@@ -6,6 +8,7 @@ use tonic::{Request, Response, Status};
 
 use super::broadcast::broadcast_service_server::BroadcastService;
 use super::broadcast::{BroadcastMessage, Empty};
+use crate::bot::io::IoData;
 use crate::bot::manager::SharedBotManager;
 
 // Define the stream type for the broadcast service
@@ -30,6 +33,7 @@ impl BroadcastService for MyBroadcastService {
         &self,
         _request: Request<Empty>,
     ) -> Result<Response<Self::SubscribeStream>, Status> {
+        println!("broadcast service running");
         let (tx, rx) = channel(4); // Buffered channel with capacity of 4
 
         // Lock the mutex to access the BotManager and its stdout_receiver
@@ -40,6 +44,20 @@ impl BroadcastService for MyBroadcastService {
 
         // Clone the receiver
         let receiver_clone = manager.stdout_receiver.clone();
+
+        // TODO: Remove. FOR TESTING/DEBUGGING ONLY
+        let sender_clone = manager.stdout_sender.clone();
+        tokio::spawn(async move {
+            loop {
+                let _ = sender_clone.as_ref().lock().unwrap().send(IoData {
+                    io_type: crate::bot::io::IoDataType::Out,
+                    bot_id: String::new(),
+                    data: Vec::new(),
+                });
+
+                sleep(Duration::from_secs(2));
+            }
+        });
 
         // Spawn a new task to handle receiving messages
         let tx = tx.clone(); // Clone the sender to move it into the task
