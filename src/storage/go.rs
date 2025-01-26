@@ -1,9 +1,7 @@
 // Implementation for Golang application functions
 // GO
 
-use super::Storage;
+use crate::bot::bot::Bot;
 
-impl Storage {
-    // TODO: initialize golang project directory.
-    pub fn initialize_go() {}
-}
+// TODO: initialize golang project directory.
+pub fn initialize_go(bot: &Bot) {}

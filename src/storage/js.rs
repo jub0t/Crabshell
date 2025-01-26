@@ -8,8 +8,6 @@ use serde_json::{Map, Value};
 
 use crate::bot::bot::Bot;
 
-use super::Storage;
-
 #[derive(Serialize)]
 struct PackageJson {
     name: String,
@@ -18,19 +16,17 @@ struct PackageJson {
     scripts: Map<String, Value>, // Change to serde_json::Value to allow arbitrary JSON types
 }
 
-impl Storage {
-    // TODO: Do this.
-    pub fn install_node_modules() {}
+// TODO: Do this.
+pub fn install_node_modules() {}
 
-    // npm init --yes or use custom json
-    pub fn initialize_js(&self, bot: &Bot) {
-        let package_json = PackageJson {
-            main: "index.js".to_string(),
-            version: "1".to_string(),
-            scripts: Map::new(),
-            name: bot.name.to_string(),
-        };
+// npm init --yes or use custom json
+pub fn initialize_js(bot: &Bot) {
+    let package_json = PackageJson {
+        main: "index.js".to_string(),
+        version: "1".to_string(),
+        scripts: Map::new(),
+        name: bot.name.to_string(),
+    };
 
-        // fs::write(path, contents)
-    }
+    // fs::write(path, contents)
 }
