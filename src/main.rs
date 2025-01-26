@@ -2,6 +2,7 @@ use bot::{config::ManagerConfig, manager::BotManager};
 use utils::thead::to_arc_mutex;
 
 pub mod bot;
+pub mod config;
 pub mod core;
 pub mod database;
 pub mod storage;

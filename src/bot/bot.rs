@@ -11,16 +11,16 @@ use super::manager::BotEngine;
 
 #[derive(Serialize)]
 pub enum BotStatus {
-    Stopped = 0,
-    Running = 1,
-    Paused = 2,
-    None = 3,
+    Stopped,
+    Running,
+    Paused,
+    None,
 }
 
 impl BotStatus {
     pub fn as_uint32(&self) -> u32 {
         match self {
-            Self::Stopped => {
+            Self::None => {
                 return 0;
             }
 
@@ -28,11 +28,11 @@ impl BotStatus {
                 return 1;
             }
 
-            Self::Paused => {
+            Self::Stopped => {
                 return 2;
             }
 
-            Self::None => {
+            Self::Paused => {
                 return 3;
             }
         }

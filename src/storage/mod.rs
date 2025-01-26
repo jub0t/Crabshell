@@ -1,6 +1,7 @@
 use crate::bot::{bot::Bot, manager::BotEngine};
 
 // Will handle the on-disk storage for files for every application.
+pub mod doctor;
 pub mod fm;
 pub mod go;
 pub mod js;
