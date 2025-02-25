@@ -52,7 +52,7 @@ impl BroadcastService for MyBroadcastService {
                 let _ = sender_clone.as_ref().lock().unwrap().send(IoData {
                     io_type: crate::bot::io::IoDataType::Out,
                     bot_id: String::new(),
-                    data: Vec::new(),
+                    data: Vec::from("hellloo"),
                 });
 
                 sleep(Duration::from_secs(2));
