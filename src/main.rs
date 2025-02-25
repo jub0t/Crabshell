@@ -10,6 +10,7 @@ pub mod utils;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    tracing_subscriber::fmt::init();
     // Let's start the gRPC("core") client for out-going and in-coming communications.
     let man = BotManager::new(ManagerConfig::new());
     let safe_man = to_arc_mutex(man);

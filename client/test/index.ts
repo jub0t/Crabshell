@@ -39,7 +39,7 @@ call.on('end', () => {
 call.on('error', (e) => {
     console.error('Error:', e);
     // Connection broke from the server, reconnect?
-    if (e.code ==14){
+    if (e.code == 14) {
         // Reconnect logic
     }
 });
@@ -63,6 +63,11 @@ app.get("/create-dummy", (req, res) => {
             res.status(500).json({ success: false, error: error.code });
         }
     })
+})
+
+app.get("/fake-io", (req, res) => {
+    const text = req.query.text;
+    console.log(text)
 })
 
 // HTTP Route for Start Request (bot service)

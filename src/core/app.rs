@@ -1,21 +1,20 @@
 use tonic::{Request, Response, Status};
-
-use crate::bot::manager::SharedBotManager;
+use tracing::info;
 
 use super::bot::application_server::Application;
 use super::bot::{
     BotInfo, CreateBotRequest, CreateBotResponse, ListRequest, ListResponse, StartRequest,
     StartResponse,
 };
+use crate::bot::manager::SharedBotManager;
 
 pub struct MyApplication {
-    pub bot_manager: SharedBotManager, // Add this field
+    pub bot_manager: SharedBotManager,
 }
 
 impl MyApplication {
-    // Modify the constructor to accept a bot manager
     pub fn new(bot_manager: SharedBotManager) -> Self {
-        MyApplication { bot_manager }
+        Self { bot_manager }
     }
 }
 
@@ -25,6 +24,7 @@ impl Application for MyApplication {
         &self,
         _request: Request<StartRequest>,
     ) -> Result<Response<StartResponse>, Status> {
+        info!("Received 'start' request");
         let reply = StartResponse { success: true };
         Ok(Response::new(reply))
     }
@@ -33,47 +33,51 @@ impl Application for MyApplication {
         &self,
         _request: Request<ListRequest>,
     ) -> Result<Response<ListResponse>, Status> {
-        // TODO: A LOT of optimizations and code improvements can be made here.
-        println!("Requested 'ListAll'");
-        let man = self.bot_manager.clone();
-        let a = man.lock().unwrap();
-        let bots = &a.bots;
+        info!("Received 'list_all' request");
 
-        let mut bots_data = Vec::new();
-        for bot in bots.iter() {
-            let info = bot.1;
+        let bots_data = {
+            let manager = self
+                .bot_manager
+                .lock()
+                .expect("Failed to acquire bot_manager lock");
+            manager
+                .bots
+                .iter()
+                .map(|(_, info)| BotInfo {
+                    id: info.id.clone(),
+                    name: info.name.clone(),
+                    status: info.status.as_uint32(),
+                    engine: info.engine.as_string(),
+                    absolute_path: info.absolute_path.clone(),
+                })
+                .collect::<Vec<_>>()
+        };
 
-            bots_data.push(BotInfo {
-                id: info.id.clone(),
-                name: info.name.clone(),
-                status: info.status.as_uint32(),
-                engine: info.engine.as_string(),
-                absolute_path: info.absolute_path.clone(),
-            });
-        }
-
-        println!("{:#?}", &bots_data);
-        let reply = ListResponse { data: bots_data };
-        Ok(Response::new(reply))
+        info!("Bots available: {:#?}", &bots_data);
+        Ok(Response::new(ListResponse { data: bots_data }))
     }
 
     async fn create_bot(
         &self,
         request: Request<CreateBotRequest>,
     ) -> Result<Response<CreateBotResponse>, Status> {
-        let man = self.bot_manager.clone();
-        let mut a = man.lock().unwrap();
-
         let data = request.get_ref();
-        match a.add(&data.name) {
+        info!("Received 'create_bot' request for bot: {}", data.name);
+
+        let mut manager = self
+            .bot_manager
+            .lock()
+            .expect("Failed to acquire bot_manager lock");
+
+        match manager.add(&data.name) {
+            Ok(bot) => {
+                info!("Successfully created bot: {:#?}", bot);
+                Ok(Response::new(CreateBotResponse::default()))
+            }
             Err(e) => {
-                println!("{:#?}", e);
-                return Ok(Response::new(CreateBotResponse::default()));
+                info!("Failed to create bot: {:#?}", e);
+                Err(Status::internal("Failed to create bot"))
             }
-            Ok(data) => {
-                println!("{:#?}", data);
-                return Ok(Response::new(CreateBotResponse::default()));
-            }
-        };
+        }
     }
 }
