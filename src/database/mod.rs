@@ -18,14 +18,15 @@ pub async fn new(conn: Surreal<Db>) -> Result<DatabaseWrapper, Error> {
 #[derive(Debug, Serialize, serde::Deserialize)]
 pub struct User {
     pub is_admin: bool,
-    pub username: String,
-    pub password: String,
+    pub username: Cow<'static, str>,
+    pub password: Cow<'static, str>,
     pub tokens: Vec<String>,
 }
 
 #[derive(Serialize, Deserialize)]
-pub struct OptimizedExample {
-    name: Cow<'static, str>,
+pub struct AccessTokens {
+    user_id: Cow<'static, str>,
+    token: Cow<'static, str>,
 }
 
 #[derive(Debug, Deserialize)]

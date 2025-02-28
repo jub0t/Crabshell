@@ -1,5 +1,7 @@
 #[cfg(test)]
 mod tests {
+    use std::borrow::Cow;
+
     use surrealdb::{engine::local::Mem, Surreal};
 
     use crate::database::{self, User};
@@ -16,8 +18,8 @@ mod tests {
         let _ = db
             .create_user(User {
                 is_admin: true,
-                password: "secrethehe".to_string(),
-                username: "john".to_string(),
+                password: Cow::Borrowed("secrethehe"),
+                username: Cow::Borrowed("john"),
                 tokens: Vec::new(),
             })
             .await;

@@ -4,7 +4,7 @@
 use serde::Serialize;
 use serde_json::{Map, Value};
 
-use crate::bot::bot::Bot;
+use crate::application::application::Bot;
 
 #[derive(Serialize)]
 struct PackageJson {

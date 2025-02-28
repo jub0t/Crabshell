@@ -1,12 +1,12 @@
 use tonic::{Request, Response, Status};
 use tracing::info;
 
-use super::bot::application_server::Application;
+use super::application::application_server::Applications;
 use super::bot::{
     BotInfo, CreateBotRequest, CreateBotResponse, ListRequest, ListResponse, StartRequest,
     StartResponse,
 };
-use crate::bot::manager::SharedBotManager;
+use crate::application::manager::SharedBotManager;
 
 pub struct MyApplication {
     pub bot_manager: SharedBotManager,
@@ -19,7 +19,7 @@ impl MyApplication {
 }
 
 #[tonic::async_trait]
-impl Application for MyApplication {
+impl Applications for MyApplication {
     async fn start(
         &self,
         _request: Request<StartRequest>,

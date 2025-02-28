@@ -4,7 +4,7 @@ use std::sync::mpsc::{Receiver, Sender};
 use std::sync::{Arc, Mutex};
 use std::thread::{self};
 
-use super::bot::BotId;
+use super::application::BotId;
 
 pub type SafeOut = Arc<Mutex<ChildStdout>>;
 pub type SafeErr = Arc<Mutex<ChildStderr>>;

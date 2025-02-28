@@ -8,8 +8,8 @@ use tonic::{Request, Response, Status};
 
 use super::broadcast::broadcast_service_server::BroadcastService;
 use super::broadcast::{BroadcastMessage, Empty};
-use crate::bot::io::IoData;
-use crate::bot::manager::SharedBotManager;
+use crate::application::io::IoData;
+use crate::application::manager::SharedBotManager;
 
 // Define the stream type for the broadcast service
 type ResponseStream = Pin<Box<dyn Stream<Item = Result<BroadcastMessage, Status>> + Send>>;

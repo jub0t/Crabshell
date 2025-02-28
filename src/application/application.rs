@@ -3,7 +3,7 @@ use std::fs;
 use std::process::{Child, Command, Stdio};
 use uuid::Uuid;
 
-use crate::bot::io::IndependantIO;
+use crate::application::io::IndependantIO;
 use crate::utils::thead::to_arc_mutex;
 
 use super::io::SafeIoSender;

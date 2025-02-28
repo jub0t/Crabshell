@@ -1,7 +1,7 @@
 syntax = "proto3";
-package bot;
+package application;
 
-service Application {
+service Applications {
     rpc Start (StartRequest) returns (StartResponse);
     rpc ListAll (ListRequest) returns (ListResponse);
     rpc CreateBot (CreateBotRequest) returns (CreateBotResponse);

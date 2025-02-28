@@ -5,13 +5,13 @@ use app::MyApplication;
 use io::MyBroadcastService;
 use tonic::transport::Server;
 
-use bot::application_server::ApplicationServer;
+use application::application_server::ApplicationServer;
 use broadcast::broadcast_service_server::BroadcastServiceServer;
 
-use crate::bot::manager::SharedBotManager;
+use crate::application::manager::SharedBotManager;
 
-pub mod bot {
-    tonic::include_proto!("bot");
+pub mod application {
+    tonic::include_proto!("application");
 }
 
 pub mod broadcast {

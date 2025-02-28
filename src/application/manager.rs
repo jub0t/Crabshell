@@ -7,7 +7,7 @@ use serde::Serialize;
 
 use crate::utils::thead::to_arc_mutex;
 
-use super::bot::{Bot, StartBotOptions};
+use super::application::{Bot, StartBotOptions};
 use super::config::ManagerConfig;
 use super::io::{SafeIoReceiver, SafeIoSender};
 

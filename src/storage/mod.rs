@@ -1,7 +1,7 @@
 use go::initialize_go;
 use js::initialize_js;
 
-use crate::bot::{bot::Bot, manager::BotEngine};
+use crate::application::{application::Bot, manager::BotEngine};
 
 // Will handle the on-disk storage for files for every application.
 pub mod doctor;

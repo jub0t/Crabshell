@@ -1,6 +1,6 @@
 use std::fs::{self, ReadDir};
 
-use crate::bot::bot::Bot;
+use crate::application::application::Bot;
 
 // I hope this is not dangerous
 pub struct FileTreeNode {
