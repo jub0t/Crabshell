@@ -2,8 +2,11 @@ import protoLoader from '@grpc/proto-loader';
 import grpc from '@grpc/grpc-js';
 import express from 'express';
 import path from 'path';
+import Cancala from '../sdk';
+import { Engine } from '../sdk/enums';
 const app = express();
 
+const can = new Cancala()
 // Load the .proto files and define package
 const packageDefinition = protoLoader.loadSync([
     path.resolve('../proto/broadcast.proto'),
@@ -44,25 +47,26 @@ call.on('error', (e) => {
     }
 });
 
-app.get("/create-dummy", (req, res) => {
+app.get("/create-dummy", async (req, res) => {
     const start = new Date();
 
-    botClient.CreateBot({
-        // id:"1",
+    const bot = await can.create({
         name: "Master Machine",
-        engine: 1,
-    }, (error: any, response: any) => {
-        if (!error) {
-            return res.json({
-                success: true,
-                time: new Date().getTime() - start.getTime(),  // Return time taken for request
-                data: response.data  // Response from gRPC server
-            })
-        } else {
-            console.error('Error:', error);
-            res.status(500).json({ success: false, error: error.code });
-        }
+        engine: Engine.Node,
     })
+
+    console.log(bot)
+
+    if (bot != null) {
+        console.log(bot)
+        return res.json({
+            success: true,
+            time: new Date().getTime() - start.getTime(),
+            data: bot
+        })
+    } else {
+        res.status(500).json({ success: false });
+    }
 })
 
 app.get("/fake-io", (req, res) => {
