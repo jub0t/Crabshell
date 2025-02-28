@@ -2,6 +2,9 @@ import grpc from '@grpc/grpc-js';
 import protoLoader from '@grpc/proto-loader';
 import path from 'path';
 
+// TODO: make this loading static, relying on reading and compiling proto files
+// just in time slows down performance
+
 // gRPC service definitions
 const PROTO_FILES = ['broadcast.proto', 'system.proto', 'bot.proto'];
 const PROTO_PATHS = PROTO_FILES.map(file => path.resolve('../proto', file));
