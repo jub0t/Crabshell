@@ -1,39 +1,34 @@
-import grpc from "@grpc/grpc-js";
-import { CreateBotRequest, CreateBotResponse } from "../libs/bot"; // Adjust import path accordingly
+import protoLoader from '@grpc/proto-loader';
+import grpc from '@grpc/grpc-js';
+import express from 'express';
+import path from 'path';
 
-const SERVICE_ADDRESS = "localhost:50051";
+// Load the .proto files and define package
+const packageDefinition = protoLoader.loadSync([
+    path.resolve('../proto/broadcast.proto'),
+    path.resolve('../proto/system.proto'),
+    path.resolve('../proto/bot.proto'),
+], {
+    longs: String,
+    enums: String,
+    keepCase: true,
+    defaults: true,
+    oneofs: true
+});
 
-const client = new grpc.Client(SERVICE_ADDRESS, grpc.credentials.createInsecure());
+// Load both bot and broadcast services
+const protoBot = grpc.loadPackageDefinition(packageDefinition).bot;  // 'bot' package
+const protoBroadcast = grpc.loadPackageDefinition(packageDefinition).broadcast;  // 'broadcast' package
 
-class BotAbstraction {
-    constructor() { }
-
-    async CreateBot(options: CreateBotRequest): Promise<CreateBotResponse> {
-        try {
-            const requestPayload = CreateBotRequest.encode(options).finish();
-
-            return await new Promise((resolve, reject) => {
-                client.makeUnaryRequest(
-                    "/Application/CreateBot",
-                    (arg) => arg, // No transformation needed for request
-                    CreateBotResponse.decode,
-                    requestPayload,
-                    (error, response) => {
-                        if (error) {
-                            console.error(error)
-                            reject(error);
-                        } else {
-                            resolve(response);
-                        }
-                    }
-                );
-            });
-        } catch (error) {
-            throw new Error(error);
-        }
-    }
-}
+// gRPC client for bot and broadcast services
+const botClient = new protoBot.Application('localhost:50051', grpc.credentials.createInsecure());
+const broadcastClient = new protoBroadcast.BroadcastService('localhost:50051', grpc.credentials.createInsecure());  // Use broadcast service client
 
 export const clients = {
-    bot: new BotAbstraction()
-};
+    bot: botClient,
+    broadcast: broadcastClient
+}
+
+export default class CoreAbstraction {
+    constructor(address: string) { }
+}

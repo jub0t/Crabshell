@@ -1,9 +1,12 @@
-import { BrowserHeaders } from "browser-headers";
 import { clients } from "./core";
 import { Engine } from "./enums";
+import { CreateBotRequest } from "../libs/bot_pb";
 
 export interface BotData {
-    // Define the structure of BotData here, based on what response.data contains
+    // id: string;
+    // name: string;
+    // engine: Engine;
+    // status: "running" | "stopped" | "error";
 }
 
 export interface CreateBotOptions {
@@ -11,8 +14,7 @@ export interface CreateBotOptions {
     engine: Engine;
 }
 
-export interface UpdateBotOptions extends CreateBotOptions {
-}
+export interface UpdateBotOptions extends CreateBotOptions { }
 
 export class BotInstance {
     public isRunning: boolean | null = null;
@@ -26,49 +28,58 @@ export class BotInstance {
         // Initialization logic
     }
 
-    async update(new_options: UpdateBotOptions) {
-        // TODO
+    async update(newOptions: UpdateBotOptions) {
+        // TODO: Send request to update bot
     }
 
-    async start() { }
-    async stop() { }
-    async restart() { }
+    async start() {
+        // TODO: Start bot logic
+    }
 
-    // Misc functions
+    async stop() {
+        // TODO: Stop bot logic
+    }
+
+    async restart() {
+        // TODO: Restart bot logic
+    }
+
     async is_running(): Promise<boolean> {
-        // TODO
-        return false;
+        return this.isRunning ?? false;
     }
 }
 
 class Cancala {
-    // Create new bot instance
     async find_bot_by_id(botId: string): Promise<BotInstance | null> {
-        return null
-    };
+        // TODO: Fetch bot data from backend
+        return null;
+    }
 
     async fetch_all(): Promise<BotInstance[]> {
-        return []
-    };
+        // TODO: Fetch all bots from backend
+        return [];
+    }
 
     async create(options: CreateBotOptions): Promise<BotInstance | null> {
-        try {
-            return await new Promise(async (resolve, reject) => {
-                const headers = new BrowserHeaders()
+        return new Promise((resolve, reject) => {
+            clients.bot.createBot(options, (err, resp) => {
+                if (err) {
+                    console.error("Error creating bot:", err);
+                    return reject(err);
+                }
+                if (!resp) {
+                    console.error("No response received.");
+                    return reject(new Error("No response received."));
+                }
 
                 try {
-                    const response = await clients.bot.CreateBot({
-                        name: options.name,
-                        engine: options.engine
-                    }, headers);
-                } catch (err) {
-                    console.error(err)
+                    resolve(new BotInstance(resp.data));
+                } catch (error) {
+                    console.error("Error processing response:", error);
+                    reject(error);
                 }
             });
-        } catch (error) {
-            console.error("Error:", error);
-            return null;
-        }
+        });
     }
 }
 
