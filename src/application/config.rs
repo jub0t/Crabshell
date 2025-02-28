@@ -2,12 +2,15 @@ pub struct NodeConfig {
     // d_version = (D)efault (Version)
     pub d_version: String,
 }
+
 pub struct DenoConfig {
     pub d_version: String,
 }
+
 pub struct BunConfig {
     pub d_version: String,
 }
+
 pub struct ManagerConfig {
     pub node: NodeConfig,
     pub deno: DenoConfig,

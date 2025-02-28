@@ -1,10 +1,9 @@
 use tonic::{Request, Response, Status};
 use tracing::info;
 
-use super::application::application_server::Applications;
-use super::bot::{
-    BotInfo, CreateBotRequest, CreateBotResponse, ListRequest, ListResponse, StartRequest,
-    StartResponse,
+use super::application::{
+    application_server::Application, BotInfo, CreateBotRequest, CreateBotResponse, ListRequest,
+    ListResponse, StartRequest, StartResponse,
 };
 use crate::application::manager::SharedBotManager;
 
@@ -19,7 +18,7 @@ impl MyApplication {
 }
 
 #[tonic::async_trait]
-impl Applications for MyApplication {
+impl Application for MyApplication {
     async fn start(
         &self,
         _request: Request<StartRequest>,
