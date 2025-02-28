@@ -11,3 +11,6 @@ full:
 a:
 	npx grpc_tools_node_protoc --ts_out=import_style=commonjs,binary:./libs --grpc_out=./libs --proto_path=../proto broadcast.proto system.proto bot.proto
 	npx grpc_tools_node_protoc --js_out=import_style=commonjs,binary:./libs --grpc_out=./libs --proto_path=../proto broadcast.proto system.proto bot.proto
+
+self:
+	npx pbjs -t static-module -w es6 bot.proto broadcast.proto system.proto -o ../client/sdk/proto.ts
