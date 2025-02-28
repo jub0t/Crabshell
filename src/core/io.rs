@@ -45,19 +45,19 @@ impl BroadcastService for MyBroadcastService {
         // Clone the receiver
         let receiver_clone = manager.stdout_receiver.clone();
 
-        // TODO: Remove. FOR TESTING/DEBUGGING ONLY
-        let sender_clone = manager.stdout_sender.clone();
-        tokio::spawn(async move {
-            loop {
-                let _ = sender_clone.as_ref().lock().unwrap().send(IoData {
-                    io_type: crate::bot::io::IoDataType::Out,
-                    bot_id: String::new(),
-                    data: Vec::from("hellloo"),
-                });
+        // // TODO: Remove. FOR TESTING/DEBUGGING ONLY
+        // let sender_clone = manager.stdout_sender.clone();
+        // tokio::spawn(async move {
+        //     loop {
+        //         let _ = sender_clone.as_ref().lock().unwrap().send(IoData {
+        //             io_type: crate::bot::io::IoDataType::Out,
+        //             bot_id: String::new(),
+        //             data: Vec::from("hellloo"),
+        //         });
 
-                sleep(Duration::from_secs(2));
-            }
-        });
+        //         sleep(Duration::from_secs(2));
+        //     }
+        // });
 
         // Spawn a new task to handle receiving messages
         let tx = tx.clone(); // Clone the sender to move it into the task

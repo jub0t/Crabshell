@@ -1,37 +1,39 @@
-import grpc from '@grpc/grpc-js';
-import protoLoader from '@grpc/proto-loader';
-import path from 'path';
+import grpc from "@grpc/grpc-js";
+import { CreateBotRequest, CreateBotResponse } from "../libs/bot"; // Adjust import path accordingly
 
-// TODO: make this loading static, relying on reading and compiling proto files
-// just in time slows down performance
+const SERVICE_ADDRESS = "localhost:50051";
 
-// gRPC service definitions
-const PROTO_FILES = ['broadcast.proto', 'system.proto', 'bot.proto'];
-const PROTO_PATHS = PROTO_FILES.map(file => path.resolve('../proto', file));
+const client = new grpc.Client(SERVICE_ADDRESS, grpc.credentials.createInsecure());
 
-const packageDefinition = protoLoader.loadSync(PROTO_PATHS, {
-    longs: String,
-    enums: String,
-    keepCase: true,
-    defaults: true,
-    oneofs: true,
-});
+class BotAbstraction {
+    constructor() { }
 
-const grpcPackage = grpc.loadPackageDefinition(packageDefinition);
+    async CreateBot(options: CreateBotRequest): Promise<CreateBotResponse> {
+        try {
+            const requestPayload = CreateBotRequest.encode(options).finish();
 
-// Initialize gRPC clients
+            return await new Promise((resolve, reject) => {
+                client.makeUnaryRequest(
+                    "/Application/CreateBot",
+                    (arg) => arg, // No transformation needed for request
+                    CreateBotResponse.decode,
+                    requestPayload,
+                    (error, response) => {
+                        if (error) {
+                            console.error(error)
+                            reject(error);
+                        } else {
+                            resolve(response);
+                        }
+                    }
+                );
+            });
+        } catch (error) {
+            throw new Error(error);
+        }
+    }
+}
+
 export const clients = {
-    bot: new grpcPackage.bot.Application('localhost:50051', grpc.credentials.createInsecure()),
-    broadcast: new grpcPackage.broadcast.BroadcastService('localhost:50051', grpc.credentials.createInsecure()),
-};
-
-export default class GRPCClient {
-    public clients: {
-        bot: any;
-        broadcast: any;
-    }
-
-    constructor() {
-        this.clients = clients;
-    }
+    bot: new BotAbstraction()
 };

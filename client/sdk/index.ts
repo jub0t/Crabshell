@@ -1,3 +1,4 @@
+import { BrowserHeaders } from "browser-headers";
 import { clients } from "./core";
 import { Engine } from "./enums";
 
@@ -46,20 +47,23 @@ class Cancala {
         return null
     };
 
+    async fetch_all(): Promise<BotInstance[]> {
+        return []
+    };
+
     async create(options: CreateBotOptions): Promise<BotInstance | null> {
         try {
-            return await new Promise((resolve, reject) => {
-                clients.bot.CreateBot({
-                    name: options.name,
-                    engine: options.engine
-                }, (error: any, response: any) => {
-                    if (error) {
-                        console.error("Error:", error);
-                        reject(null);
-                    } else {
-                        resolve(new BotInstance(response.data));
-                    }
-                });
+            return await new Promise(async (resolve, reject) => {
+                const headers = new BrowserHeaders()
+
+                try {
+                    const response = await clients.bot.CreateBot({
+                        name: options.name,
+                        engine: options.engine
+                    }, headers);
+                } catch (err) {
+                    console.error(err)
+                }
             });
         } catch (error) {
             console.error("Error:", error);

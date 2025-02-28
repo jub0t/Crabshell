@@ -1,0 +1,16 @@
+### file path: ./configs/buf.gen.web.yaml
+### Docs: https://github.com/stephenh/ts-proto
+version: v2
+managed:
+  enabled: true
+plugins:
+  - out: ./client/libs
+    strategy: all
+    local: protoc-gen-ts_proto
+    opt:
+      - useExactTypes=true
+      - useOptionals=all
+      - outputClientImpl=grpc-node
+      - addGrpcMetadata=true
+inputs:
+  - directory: ./proto
