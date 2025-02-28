@@ -1,3 +1,5 @@
+use std::borrow::Cow;
+
 use serde::{Deserialize, Serialize};
 use surrealdb::RecordId;
 use surrealdb::{engine::local::Db, Error, Surreal};
@@ -19,6 +21,11 @@ pub struct User {
     pub username: String,
     pub password: String,
     pub tokens: Vec<String>,
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct OptimizedExample {
+    name: Cow<'static, str>,
 }
 
 #[derive(Debug, Deserialize)]
