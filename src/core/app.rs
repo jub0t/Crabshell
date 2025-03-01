@@ -47,7 +47,6 @@ impl Application for MyApplication {
                     name: info.name.clone(),
                     status: info.status.as_uint32(),
                     engine: info.engine.as_string(),
-                    absolute_path: info.absolute_path.clone(),
                 })
                 .collect::<Vec<_>>()
         };
