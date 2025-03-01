@@ -6,7 +6,7 @@ import path from 'path';
 const packageDefinition = protoLoader.loadSync([
     path.resolve('../proto/broadcast.proto'),
     path.resolve('../proto/system.proto'),
-    path.resolve('../proto/bot.proto'),
+    path.resolve('../proto/application.proto'),
 ], {
     longs: String,
     enums: Number, // Maybe String?
@@ -16,7 +16,7 @@ const packageDefinition = protoLoader.loadSync([
 });
 
 // Load both bot and broadcast services
-const protoBot = grpcjs.loadPackageDefinition(packageDefinition).bot;  // 'bot' package
+const protoBot = grpcjs.loadPackageDefinition(packageDefinition).application;  // 'bot' package
 const protoBroadcast = grpcjs.loadPackageDefinition(packageDefinition).broadcast;  // 'broadcast' package
 
 // gRPC client for bot and broadcast services

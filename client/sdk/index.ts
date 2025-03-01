@@ -1,6 +1,5 @@
 import { clients } from "./core";
 import { Engine } from "./enums";
-import { CreateBotRequest } from "../libs/bot_pb";
 
 export interface BotData {
     // id: string;

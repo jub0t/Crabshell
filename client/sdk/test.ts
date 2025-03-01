@@ -9,9 +9,9 @@ const app = express();
 const can = new Cancala()
 // Load the .proto files and define package
 const packageDefinition = protoLoader.loadSync([
+    path.resolve('../proto/application.proto'),
     path.resolve('../proto/broadcast.proto'),
     path.resolve('../proto/system.proto'),
-    path.resolve('../proto/bot.proto'),
 ], {
     longs: String,
     enums: String,
@@ -20,8 +20,10 @@ const packageDefinition = protoLoader.loadSync([
     oneofs: true
 });
 
+console.log(packageDefinition)
+
 // Load both bot and broadcast services
-const protoBot = grpc.loadPackageDefinition(packageDefinition).bot;  // 'bot' package
+const protoBot = grpc.loadPackageDefinition(packageDefinition).application;  // 'bot' package
 const protoBroadcast = grpc.loadPackageDefinition(packageDefinition).broadcast;  // 'broadcast' package
 
 // gRPC client for bot and broadcast services
