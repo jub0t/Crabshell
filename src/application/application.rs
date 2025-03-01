@@ -1,4 +1,5 @@
 use serde::Serialize;
+use std::borrow::Cow;
 use std::fs;
 use std::process::{Child, Command, Stdio};
 use uuid::Uuid;
@@ -87,7 +88,7 @@ impl Bot {
     // Start the bot process
     pub fn start(
         &mut self,
-        arguments: Vec<String>, // TODO: maybe we can use a better data type?
+        arguments: Vec<Cow<'static, str>>, // TODO: maybe we can use a better data type?
         options: StartBotOptions,
     ) -> std::io::Result<()> {
         if self.absolute_path == None {
@@ -101,7 +102,7 @@ impl Bot {
 
             // Add all arguments
             for arg in arguments {
-                child.arg(arg);
+                child.arg(arg.to_string());
             }
 
             let mut spawned = child
@@ -133,5 +134,9 @@ impl Bot {
         }
 
         Ok(())
+    }
+
+    pub fn restart(&mut self) {
+        &self.stop();
     }
 }

@@ -1,10 +1,12 @@
 // Implementation for Javascript-based application functions
 // NODE.JS, DENO, BUN.JS
 
+use std::os;
+
 use serde::Serialize;
 use serde_json::{Map, Value};
 
-use crate::application::application::Bot;
+use crate::application::{application::Bot, manager::BotEngine};
 
 #[derive(Serialize)]
 struct PackageJson {
@@ -18,13 +20,14 @@ struct PackageJson {
 pub fn install_node_modules() {}
 
 // npm init --yes or use custom json
-pub fn initialize_js(bot: &Bot) {
-    let package_json = PackageJson {
-        main: "index.js".to_string(),
-        version: "1".to_string(),
-        scripts: Map::new(),
-        name: bot.name.to_string(),
-    };
+pub fn initialize_js(bot: &Bot) -> Result<bool, std::fmt::Error> {
+    let engine = &bot.engine;
+    let path = &bot.absolute_path;
 
+    // BotEngine::Bun => bun init
+    // BotEngine::Node => npm init --yes
+    // BotEngine::Deno => TODO: ()
+
+    return Ok(true);
     // fs::write(path, contents)
 }

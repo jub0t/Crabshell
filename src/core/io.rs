@@ -33,7 +33,6 @@ impl BroadcastService for MyBroadcastService {
         &self,
         _request: Request<Empty>,
     ) -> Result<Response<Self::SubscribeStream>, Status> {
-        println!("broadcast service running");
         let (tx, rx) = channel(4); // Buffered channel with capacity of 4
 
         // Lock the mutex to access the BotManager and its stdout_receiver

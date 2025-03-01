@@ -1,6 +1,8 @@
 pub mod app;
 pub mod io;
 
+use std::sync::{Arc, Mutex};
+
 use app::MyApplication;
 use io::MyBroadcastService;
 use tonic::transport::Server;
@@ -8,7 +10,7 @@ use tonic::transport::Server;
 use application::application_server::ApplicationServer;
 use broadcast::broadcast_service_server::BroadcastServiceServer;
 
-use crate::application::manager::SharedBotManager;
+use crate::{application::manager::SharedBotManager, database::DatabaseWrapper};
 
 pub mod application {
     tonic::include_proto!("application");
@@ -18,11 +20,16 @@ pub mod broadcast {
     tonic::include_proto!("broadcast");
 }
 
-pub async fn start(shman: SharedBotManager) -> Result<(), Box<dyn std::error::Error>> {
+pub struct StartAPIOptions {
+    pub shman: SharedBotManager,
+    pub db: Arc<Mutex<DatabaseWrapper>>,
+}
+
+pub async fn start(options: StartAPIOptions) -> Result<(), Box<dyn std::error::Error>> {
     let addr = "127.0.0.1:50051".parse()?; // gRPC server address
 
-    let application_service = MyApplication::new(shman.clone()); // Pass bot manager
-    let broadcast_service = MyBroadcastService::new(shman.clone()); // Pass bot manager
+    let application_service = MyApplication::new(options.shman.clone()); // Pass bot manager
+    let broadcast_service = MyBroadcastService::new(options.shman.clone()); // Pass bot manager
 
     // Start the gRPC server and register both services
     Server::builder()

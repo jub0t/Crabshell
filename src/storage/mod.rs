@@ -1,3 +1,5 @@
+use std::fmt::Error;
+
 use go::initialize_go;
 use js::initialize_js;
 
@@ -9,15 +11,14 @@ pub mod fm;
 pub mod go;
 pub mod js;
 
-pub fn initialize_application(bot: Bot) {
+pub fn initialize_application(bot: Bot) -> Result<bool, Error> {
     match bot.engine {
         BotEngine::Golang => {
-            initialize_go(&bot);
+            return initialize_go(&bot);
         }
 
-        // Rest are JavaScript engines.
         _ => {
-            initialize_js(&bot);
+            return initialize_js(&bot);
         }
-    }
+    };
 }
