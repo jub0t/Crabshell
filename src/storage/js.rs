@@ -22,7 +22,6 @@ pub fn install_node_modules() {}
 // npm init --yes or use custom json
 pub fn initialize_js(bot: &Bot) -> Result<bool, std::fmt::Error> {
     let engine = &bot.engine;
-    let path = &bot.absolute_path;
 
     // BotEngine::Bun => bun init
     // BotEngine::Node => npm init --yes

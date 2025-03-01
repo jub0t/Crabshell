@@ -1,7 +1,7 @@
 # Business Source License 1.1
 
 **Licensor:** Jareer Abdullah\
-**Licensed Work:** Cancala\
+**Licensed Work:** Crabshell\
 **Effective Date:** February 28, 2025\
 **Change Date:** December 1, 2035\
 **Change License:** Apache-2.0\

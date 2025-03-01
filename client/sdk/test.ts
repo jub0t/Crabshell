@@ -2,11 +2,11 @@ import protoLoader from '@grpc/proto-loader';
 import grpc from '@grpc/grpc-js';
 import express from 'express';
 import path from 'path';
-import Cancala from './index';
+import Crabshell from './index';
 import { Engine } from './enums';
 const app = express();
 
-const can = new Cancala()
+const can = new Crabshell()
 // Load the .proto files and define package
 const packageDefinition = protoLoader.loadSync([
     path.resolve('../proto/application.proto'),

@@ -48,7 +48,7 @@ pub struct Bot {
     pub process: Option<Child>,
 
     // Option<String> for now i guess.
-    pub absolute_path: Option<String>,
+    // pub absolute_path: Option<String>,
     pub engine: BotEngine,
 
     pub status: BotStatus,
@@ -67,22 +67,13 @@ impl Bot {
             name: name.to_string(),
             engine: BotEngine::Node,
             status: BotStatus::None,
-            absolute_path: None,
+            // absolute_path: None,
             process: None,
         }
     }
 
-    pub fn initialize(&self) -> bool {
+    pub fn initialize(&self) {
         // Initialize a directory if absolute path exists
-        match self.absolute_path.as_ref() {
-            None => {
-                return false;
-            }
-            Some(path) => {
-                let result = fs::create_dir(path);
-                return result.is_ok();
-            }
-        };
     }
 
     // Start the bot process
@@ -91,10 +82,10 @@ impl Bot {
         arguments: Vec<Cow<'static, str>>, // TODO: maybe we can use a better data type?
         options: StartBotOptions,
     ) -> std::io::Result<()> {
-        if self.absolute_path == None {
-            // TODO: Implement an error for this.
-            return Ok(());
-        }
+        // if self.absolute_path == None {
+        //     // TODO: Implement an error for this.
+        //     return Ok(());
+        // }
 
         if self.process.is_none() {
             let engine_cmd = self.engine.as_string();

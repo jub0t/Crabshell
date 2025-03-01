@@ -48,7 +48,7 @@ export class BotInstance {
     }
 }
 
-class Cancala {
+class Crabshell {
     async find_bot_by_id(botId: string): Promise<BotInstance | null> {
         // TODO: Fetch bot data from backend
         return null;
@@ -82,4 +82,4 @@ class Cancala {
     }
 }
 
-export default Cancala;
+export default Crabshell;
