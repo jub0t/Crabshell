@@ -3,7 +3,7 @@ use tracing::info;
 
 use super::application::{
     application_server::Application, BotInfo, CreateBotRequest, CreateBotResponse, ListRequest,
-    ListResponse, StartRequest, StartResponse,
+    ListResponse, StartRequest, StartResponse, UpdateStatusRequest, UpdateStatusResponse,
 };
 use crate::application::manager::SharedBotManager;
 
@@ -19,6 +19,7 @@ impl MyApplication {
 
 #[tonic::async_trait]
 impl Application for MyApplication {
+    // TODO: might remove this later
     async fn start(
         &self,
         _request: Request<StartRequest>,
@@ -26,6 +27,36 @@ impl Application for MyApplication {
         info!("Received 'start' request");
         let reply = StartResponse { success: true };
         Ok(Response::new(reply))
+    }
+
+    async fn update_status(
+        &self,
+        request: Request<UpdateStatusRequest>,
+    ) -> Result<Response<UpdateStatusResponse>, Status> {
+        info!("Received 'update_status' request");
+        let data = request.get_ref();
+        let bot_id = &data.bot_id;
+        let new_status = &data.status;
+
+        match new_status {
+            0 => {
+                // Start
+            }
+
+            1 => {
+                // Stop
+            }
+
+            2 => {
+                // Restart
+            }
+
+            _ => {
+                // Invalid request
+            }
+        }
+
+        return Ok(Response::new(UpdateStatusResponse::default()));
     }
 
     async fn list_all(
@@ -68,13 +99,16 @@ impl Application for MyApplication {
             .expect("Failed to acquire bot_manager lock");
 
         match manager.add(&data.name) {
-            Ok(bot) => {
-                info!("Successfully created bot: {:#?}", bot);
-                Ok(Response::new(CreateBotResponse::default()))
+            Some(bot) => {
+                info!("Successfully created bot: {:#?}", bot.id);
+                Ok(Response::new(CreateBotResponse {
+                    id: bot.id.to_owned(),
+                    success: true,
+                }))
             }
-            Err(e) => {
-                info!("Failed to create bot: {:#?}", e);
-                Err(Status::internal("Failed to create bot"))
+            None => {
+                // info!("Failed to create bot: {:#?}", e);
+                Ok(Response::new(CreateBotResponse::default()))
             }
         }
     }

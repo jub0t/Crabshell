@@ -1,37 +1,10 @@
-import protoLoader from '@grpc/proto-loader';
-import grpc from '@grpc/grpc-js';
-import express from 'express';
-import path from 'path';
-import Crabshell from './index';
 import { Engine } from './enums';
+import Crabshell from './index';
+import express from 'express';
 const app = express();
 
-const can = new Crabshell()
-// Load the .proto files and define package
-const packageDefinition = protoLoader.loadSync([
-    path.resolve('../proto/application.proto'),
-    path.resolve('../proto/broadcast.proto'),
-    path.resolve('../proto/system.proto'),
-], {
-    longs: String,
-    enums: String,
-    keepCase: true,
-    defaults: true,
-    oneofs: true
-});
-
-console.log(packageDefinition)
-
-// Load both bot and broadcast services
-const protoBot = grpc.loadPackageDefinition(packageDefinition).application;  // 'bot' package
-const protoBroadcast = grpc.loadPackageDefinition(packageDefinition).broadcast;  // 'broadcast' package
-
-// gRPC client for bot and broadcast services
-const botClient = new protoBot.Application('localhost:50051', grpc.credentials.createInsecure());
-const broadcastClient = new protoBroadcast.BroadcastService('localhost:50051', grpc.credentials.createInsecure());  // Use broadcast service client
-
-// Subscribe to broadcast messages from the server (broadcast service)
-const call = broadcastClient.Subscribe({});
+const can = new Crabshell(`127.0.0.1:50051`)
+const call = can.core.Clients.broadcast.Subscribe({});
 
 call.on('data', (response: { message: string }) => {
     console.log('Received:', response.message);
@@ -39,6 +12,7 @@ call.on('data', (response: { message: string }) => {
 
 call.on('end', () => {
     console.log('Stream ended');
+    can.core.reconnect();
 });
 
 call.on('error', (e) => {
@@ -78,7 +52,7 @@ app.get("/fake-io", (req, res) => {
 
 // HTTP Route for Start Request (bot service)
 app.get('/', (req, res) => {
-    botClient.ListAll({}, (error: any, response: any) => {
+    can.core.Clients.bot.ListAll({}, (error: any, response: any) => {
         if (!error) {
             res.json({
                 success: true,

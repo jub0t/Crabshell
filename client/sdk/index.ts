@@ -1,4 +1,4 @@
-import { clients } from "./core";
+import CoreAbstraction, { clients } from "./core";
 import { Engine } from "./enums";
 
 export interface BotData {
@@ -15,7 +15,7 @@ export interface CreateBotOptions {
 
 export interface UpdateBotOptions extends CreateBotOptions { }
 
-export class BotInstance {
+export class Bot {
     public isRunning: boolean | null = null;
     public data: BotData;
 
@@ -49,17 +49,22 @@ export class BotInstance {
 }
 
 class Crabshell {
-    async find_bot_by_id(botId: string): Promise<BotInstance | null> {
+    core: CoreAbstraction
+    constructor(address: string) {
+        this.core = new CoreAbstraction(address)
+    }
+
+    async find_bot_by_id(botId: string): Promise<Bot | null> {
         // TODO: Fetch bot data from backend
         return null;
     }
 
-    async fetch_all(): Promise<BotInstance[]> {
+    async fetch_all(): Promise<Bot[]> {
         // TODO: Fetch all bots from backend
         return [];
     }
 
-    async create(options: CreateBotOptions): Promise<BotInstance | null> {
+    async create(options: CreateBotOptions): Promise<Bot | null> {
         return new Promise((resolve, reject) => {
             clients.bot.createBot(options, (err, resp) => {
                 if (err) {
@@ -72,7 +77,7 @@ class Crabshell {
                 }
 
                 try {
-                    resolve(new BotInstance(resp.data));
+                    resolve(new Bot(resp));
                 } catch (error) {
                     console.error("Error processing response:", error);
                     reject(error);

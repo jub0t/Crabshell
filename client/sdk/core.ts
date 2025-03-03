@@ -4,9 +4,9 @@ import path from 'path';
 
 // Load the .proto files and define package
 const packageDefinition = protoLoader.loadSync([
+    path.resolve('../proto/application.proto'),
     path.resolve('../proto/broadcast.proto'),
     path.resolve('../proto/system.proto'),
-    path.resolve('../proto/application.proto'),
 ], {
     longs: String,
     enums: Number, // Maybe String?
@@ -16,18 +16,22 @@ const packageDefinition = protoLoader.loadSync([
 });
 
 // Load both bot and broadcast services
-const protoBot = grpcjs.loadPackageDefinition(packageDefinition).application;  // 'bot' package
-const protoBroadcast = grpcjs.loadPackageDefinition(packageDefinition).broadcast;  // 'broadcast' package
-
-// gRPC client for bot and broadcast services
-const botClient = new protoBot.Application('localhost:50051', grpcjs.credentials.createInsecure());
-const broadcastClient = new protoBroadcast.BroadcastService('localhost:50051', grpcjs.credentials.createInsecure());  // Use broadcast service client
+const protoBot = grpcjs.loadPackageDefinition(packageDefinition).application;
+const protoBroadcast = grpcjs.loadPackageDefinition(packageDefinition).broadcast;
 
 export const clients = {
-    bot: botClient,
-    broadcast: broadcastClient
+    bot: new protoBot.Application('localhost:50051', grpcjs.credentials.createInsecure()),
+    broadcast: new protoBroadcast.BroadcastService('localhost:50051', grpcjs.credentials.createInsecure())  // Use broadcast service client
 }
 
 export default class CoreAbstraction {
+    Clients = clients;
     constructor(address: string) { }
+
+    async reconnect() {
+        this.Clients = {
+            bot: new protoBot.Application('localhost:50051', grpcjs.credentials.createInsecure()),
+            broadcast: new protoBroadcast.BroadcastService('localhost:50051', grpcjs.credentials.createInsecure())  // Use broadcast service client
+        }
+    }
 }

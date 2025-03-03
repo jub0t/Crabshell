@@ -5,6 +5,7 @@ service Application {
     rpc Start (StartRequest) returns (StartResponse);
     rpc ListAll (ListRequest) returns (ListResponse);
     rpc CreateBot (CreateBotRequest) returns (CreateBotResponse);
+    rpc UpdateStatus (UpdateStatusRequest) returns (UpdateStatusResponse);
 }
 
 message CreateBotRequest {
@@ -13,6 +14,7 @@ message CreateBotRequest {
 }
 
 message CreateBotResponse {
+    bool success = 2;
     string id = 1;
 }
 
@@ -35,5 +37,20 @@ message StartRequest {
 }
 
 message StartResponse {
+    bool success = 1;
+}
+
+enum UpdateStatusTypes {
+    Start = 0;
+    Stop = 1;
+    Restart = 2;
+}
+
+message UpdateStatusRequest {
+    string bot_id = 1;
+    UpdateStatusTypes status = 2;
+}
+
+message UpdateStatusResponse {
     bool success = 1;
 }

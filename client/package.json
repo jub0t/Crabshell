@@ -10,8 +10,9 @@
     "protobufjs-cli": "^1.1.3"
   },
   "devDependencies": {
-    "@types/node": "^22.13.5",
-    "@types/bun": "latest"
+    "@types/bun": "latest",
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.13.5"
   },
   "name": "client",
   "module": "index.ts",

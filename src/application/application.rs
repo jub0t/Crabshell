@@ -50,7 +50,6 @@ pub struct Bot {
     // Option<String> for now i guess.
     // pub absolute_path: Option<String>,
     pub engine: BotEngine,
-
     pub status: BotStatus,
 }
 

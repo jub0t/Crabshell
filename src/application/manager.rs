@@ -1,5 +1,6 @@
 use std::collections::HashMap;
-use std::io::Result;
+use std::fmt;
+use std::io::{Error, Result};
 use std::sync::mpsc::channel;
 use std::sync::{Arc, Mutex};
 
@@ -59,22 +60,23 @@ impl BotManager {
     }
 
     // Add a new bot to the manager
-    pub fn add(&mut self, name: &str) -> Result<()> {
+    pub fn add(&mut self, name: &str) -> Option<&Bot> {
         if self.bots.contains_key(name) {
             println!("Bot {} already exists", name);
-            return Ok(());
+            return None;
         }
 
         let mut bot = Bot::new(name);
-        bot.start(
+        // TODO: better handling needed
+        let _ = bot.start(
             Vec::new(),
             StartBotOptions {
                 io_sender: self.stdout_sender.clone(),
             },
-        )?;
+        );
         self.bots.insert(name.to_string(), bot);
 
-        Ok(())
+        return self.bots.get(&name.to_string());
     }
 
     // Start a bot
