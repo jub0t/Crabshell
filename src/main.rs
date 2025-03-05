@@ -1,6 +1,5 @@
-use core::StartAPIOptions;
-
 use application::{config::ManagerConfig, manager::BotManager};
+use core::StartAPIOptions;
 use surrealdb::{engine::local::Mem, Surreal};
 use utils::thead::to_arc_mutex;
 
@@ -17,6 +16,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     tracing_subscriber::fmt::init();
     let connection = Surreal::new::<Mem>(()).await?;
     connection.use_ns("test").use_db("test").await?;
+
     let db = database::new(connection).await?;
     let safe_db = to_arc_mutex(db);
 

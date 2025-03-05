@@ -1,10 +1,8 @@
 #[cfg(test)]
 mod tests {
-    use std::borrow::Cow;
-
-    use surrealdb::{engine::local::Mem, Surreal};
-
     use crate::database::{self, User};
+    use std::borrow::Cow;
+    use surrealdb::{engine::local::Mem, Surreal};
 
     #[tokio::test]
     async fn test_user_creation() {
