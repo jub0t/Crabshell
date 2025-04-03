@@ -31,6 +31,7 @@ pub async fn start(options: StartAPIOptions) -> Result<(), Box<dyn std::error::E
     let application_service = MyApplication::new(options.shman.clone()); // Pass bot manager
     let broadcast_service = MyBroadcastService::new(options.shman.clone()); // Pass bot manager
 
+    println!("Active at http://127.0.0.1:50051");
     // Start the gRPC server and register both services
     Server::builder()
         .add_service(ApplicationServer::new(application_service)) // Register bot application service
