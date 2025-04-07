@@ -12,10 +12,10 @@ use super::manager::BotEngine;
 
 #[derive(Serialize)]
 pub enum BotStatus {
-    Stopped,
-    Running,
-    Paused,
-    None,
+    Stopped = 2,
+    Running = 1,
+    Paused = 3,
+    None = 0,
 }
 
 impl BotStatus {
@@ -86,6 +86,7 @@ impl Bot {
         //     return Ok(());
         // }
 
+        self.status = BotStatus::Running;
         if self.process.is_none() {
             let engine_cmd = self.engine.as_string();
             let mut child = Command::new(engine_cmd);
@@ -118,6 +119,7 @@ impl Bot {
 
     // Stop the bot process
     pub fn stop(&mut self) -> std::io::Result<()> {
+        self.status = BotStatus::Stopped;
         if let Some(ref mut process) = self.process {
             process.kill()?;
             self.process = None;
@@ -127,6 +129,7 @@ impl Bot {
     }
 
     pub fn restart(&mut self) {
-        &self.stop();
+        let _ = &self.stop();
+        self.status = BotStatus::Stopped;
     }
 }

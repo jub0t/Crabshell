@@ -35,7 +35,7 @@ app.get("/create-dummy", async (req, res) => {
 
     if (bot != null) {
         console.log(bot)
-        return res.json({
+        res.json({
             success: true,
             time: new Date().getTime() - start.getTime(),
             data: bot.data
@@ -50,18 +50,20 @@ app.get("/fake-io", (req, res) => {
     console.log(text)
 })
 
+
+app.get("/start/:id/:status", async (req, res) => {
+    const { id, status } = req.params
+
+    const results = await can.update_status_by_id(id, parseInt(status))
+    res.json(results)
+})
+
 // HTTP Route for Start Request (bot service)
-app.get('/', (req, res) => {
-    can.core.Clients.bot.ListAll({}, (error: any, response: any) => {
-        if (!error) {
-            res.json({
-                success: true,
-                data: response.data  // Response from gRPC server
-            });
-        } else {
-            console.error('Error:', error);
-            res.status(500).json({ success: false, error: error.code });
-        }
+app.get('/', async (req, res) => {
+    const bots = await can.fetch_all_raw()
+    res.json({
+        success: true,
+        data: bots?.data  // Response from gRPC server
     });
 });
 

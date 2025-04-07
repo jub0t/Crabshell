@@ -38,16 +38,24 @@ impl Application for MyApplication {
         let bot_id = &data.bot_id;
         let new_status = &data.status;
 
+        let mut manager = self
+            .bot_manager
+            .lock()
+            .expect("Failed to acquire bot_manager lock");
+
+        info!("Application {:?} Status Updated: {:?}", bot_id, new_status);
         match new_status {
             0 => {
-                // Start
+                let _ = manager.start(bot_id);
             }
 
             1 => {
                 // Stop
+                let _ = manager.stop(bot_id);
             }
 
             2 => {
+                let _ = manager.restart(bot_id);
                 // Restart
             }
 

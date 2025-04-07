@@ -6,9 +6,10 @@ use std::sync::{Arc, Mutex};
 
 use serde::Serialize;
 
+use crate::core::application::UpdateStatusTypes;
 use crate::utils::thead::to_arc_mutex;
 
-use super::application::{Bot, StartBotOptions};
+use super::application::{Bot, BotStatus, StartBotOptions};
 use super::config::ManagerConfig;
 use super::io::{SafeIoReceiver, SafeIoSender};
 
