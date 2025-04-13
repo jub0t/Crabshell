@@ -18,7 +18,6 @@ mod tests {
                 is_admin: true,
                 password: Cow::Borrowed("secrethehe"),
                 username: Cow::Borrowed("john"),
-                tokens: Vec::new(),
             })
             .await;
 
