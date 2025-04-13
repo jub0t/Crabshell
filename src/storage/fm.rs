@@ -1,7 +1,3 @@
-use std::fs::{self, ReadDir};
-
-use crate::application::application::Bot;
-
 // I hope this is not dangerous
 // Lets not use this anywhere for now
 pub struct FileNode {
