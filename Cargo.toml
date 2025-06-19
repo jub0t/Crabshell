@@ -16,6 +16,7 @@ tracing = "0.1"
 tracing-subscriber = "0.3"                                            # Optional but recommended for logging
 surrealdb = { version = "2.2.1", features = ["kv-mem"] }
 sha2 = "0.10"
+argon2 = "0.5.3"
 
 [dependencies.uuid]
 version = "1.12.1"

@@ -1,11 +1,12 @@
+use std::sync::Arc;
+use tokio::sync::Mutex;
+use tonic::transport::Server;
+
 pub mod app;
 pub mod io;
 
-use std::sync::{Arc, Mutex};
-
 use app::MyApplication;
 use io::MyBroadcastService;
-use tonic::transport::Server;
 
 use application::application_server::ApplicationServer;
 use broadcast::broadcast_service_server::BroadcastServiceServer;
@@ -20,24 +21,64 @@ pub mod broadcast {
     tonic::include_proto!("broadcast");
 }
 
+pub mod database {
+    tonic::include_proto!("database");
+}
+
+/// Options for starting the gRPC API server.
 pub struct StartAPIOptions {
     pub shman: SharedBotManager,
     pub db: Arc<Mutex<DatabaseWrapper>>,
 }
 
+/// Starts the gRPC server with both Application and Broadcast services.
 pub async fn start(options: StartAPIOptions) -> Result<(), Box<dyn std::error::Error>> {
     let addr = "127.0.0.1:50051".parse()?; // gRPC server address
 
-    let application_service = MyApplication::new(options.shman.clone()); // Pass bot manager
-    let broadcast_service = MyBroadcastService::new(options.shman.clone()); // Pass bot manager
+    // Pass both the bot manager and database handle into each service
+    let application_service = MyApplication::new(options.shman.clone(), options.db.clone());
+    let broadcast_service = MyBroadcastService::new(options.shman.clone(), options.db.clone());
 
-    println!("Active at http://127.0.0.1:50051");
-    // Start the gRPC server and register both services
+    println!("Server listening on {}", addr);
+
+    // Build and run the gRPC server
     Server::builder()
-        .add_service(ApplicationServer::new(application_service)) // Register bot application service
-        .add_service(BroadcastServiceServer::new(broadcast_service)) // Register broadcast service
+        .add_service(ApplicationServer::new(application_service))
+        .add_service(BroadcastServiceServer::new(broadcast_service))
         .serve(addr)
         .await?;
 
     Ok(())
 }
+
+// In `app.rs` and `io.rs`, update constructors and store the database:
+
+// app.rs
+// ```rust
+// pub struct MyApplication {
+//     shman: SharedBotManager,
+//     db: Arc<Mutex<DatabaseWrapper>>,
+// }
+//
+// impl MyApplication {
+//     pub fn new(shman: SharedBotManager, db: Arc<Mutex<DatabaseWrapper>>) -> Self {
+//         Self { shman, db }
+//     }
+//     // ... service implementation, using `self.db` to access database
+// }
+// ```
+
+// io.rs
+// ```rust
+// pub struct MyBroadcastService {
+//     shman: SharedBotManager,
+//     db: Arc<Mutex<DatabaseWrapper>>,
+// }
+//
+// impl MyBroadcastService {
+//     pub fn new(shman: SharedBotManager, db: Arc<Mutex<DatabaseWrapper>>) -> Self {
+//         Self { shman, db }
+//     }
+//     // ... service implementation, using `self.db` to access database
+// }
+//

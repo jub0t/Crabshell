@@ -1,27 +1,27 @@
 use std::pin::Pin;
-use std::thread::sleep;
-use std::time::Duration;
 use tokio::sync::mpsc::channel;
+use tokio::sync::Mutex;
 use tokio_stream::wrappers::ReceiverStream;
 use tokio_stream::Stream;
 use tonic::{Request, Response, Status};
 
 use super::broadcast::broadcast_service_server::BroadcastService;
 use super::broadcast::{BroadcastMessage, Empty};
-use crate::application::io::IoData;
 use crate::application::manager::SharedBotManager;
+use crate::database::DatabaseWrapper;
 
 // Define the stream type for the broadcast service
 type ResponseStream = Pin<Box<dyn Stream<Item = Result<BroadcastMessage, Status>> + Send>>;
+use std::sync::Arc;
 
 pub struct MyBroadcastService {
-    pub bot_manager: SharedBotManager, // Add this field
+    bot_manager: SharedBotManager,
+    db: Arc<Mutex<DatabaseWrapper>>,
 }
 
 impl MyBroadcastService {
-    // Modify the constructor to accept a bot manager
-    pub fn new(bot_manager: SharedBotManager) -> Self {
-        MyBroadcastService { bot_manager }
+    pub fn new(bot_manager: SharedBotManager, db: Arc<Mutex<DatabaseWrapper>>) -> Self {
+        Self { bot_manager, db }
     }
 }
 

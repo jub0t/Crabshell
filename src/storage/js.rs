@@ -1,12 +1,10 @@
 // Implementation for Javascript-based application functions
 // NODE.JS, DENO, BUN.JS
 
-use std::os;
-
 use serde::Serialize;
 use serde_json::{Map, Value};
 
-use crate::application::{application::Bot, manager::BotEngine};
+use crate::application::application::Bot;
 
 #[derive(Serialize)]
 struct PackageJson {

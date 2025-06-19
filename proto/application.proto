@@ -6,6 +6,7 @@ service Application {
     rpc ListAll (ListRequest) returns (ListResponse);
     rpc CreateBot (CreateBotRequest) returns (CreateBotResponse);
     rpc UpdateStatus (UpdateStatusRequest) returns (UpdateStatusResponse);
+    rpc Authenticate (AuthenticationBody) returns (AuthenticationResponse);
 }
 
 message CreateBotRequest {
@@ -53,4 +54,15 @@ message UpdateStatusRequest {
 
 message UpdateStatusResponse {
     bool success = 1;
+}
+
+
+message AuthenticationBody {
+    string username = 1; 
+    string password = 2; 
+}
+
+message AuthenticationResponse {
+    bool success = 1;
+    string token = 2; 
 }

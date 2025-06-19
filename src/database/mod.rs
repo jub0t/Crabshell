@@ -1,15 +1,17 @@
 use std::borrow::Cow;
 
+use argon2::{
+    password_hash::{rand_core::OsRng, PasswordHasher, SaltString},
+    Argon2,
+};
 use serde::{Deserialize, Serialize};
 use surrealdb::RecordId;
 use surrealdb::{engine::local::Db, Error, Surreal};
 use uuid::Uuid;
 
-use crate::application::application::BotStatus;
-use crate::application::manager::BotEngine;
-
+#[derive(Clone)]
 pub struct DatabaseWrapper {
-    conn: Surreal<Db>,
+    pub conn: Surreal<Db>,
 }
 
 pub async fn new(conn: Surreal<Db>) -> Result<DatabaseWrapper, Error> {
@@ -27,8 +29,8 @@ pub struct User {
 
 #[derive(Serialize, Deserialize)]
 pub struct AccessTokens {
-    user_id: Cow<'static, str>,
-    token: Cow<'static, str>,
+    pub user_id: Cow<'static, str>,
+    pub token: Cow<'static, str>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -127,9 +129,52 @@ impl DatabaseWrapper {
         }
     }
 
-    pub async fn create_user(&self, user: User) -> Result<User, String> {
-        let id = Uuid::new_v4().to_string();
+    pub async fn get_or_create_access_token_by_username(
+        &self,
+        username: String,
+    ) -> Result<AccessTokens, String> {
+        // 1) Lookup the user’s RecordId from their username
+        let sql_user = "SELECT id FROM users WHERE username = $username";
+        let mut user_q = self
+            .conn
+            .query(sql_user)
+            .bind(("username", username.clone()))
+            .await
+            .map_err(|e| e.to_string())?;
 
+        // We expect exactly one result row with an `id` column
+        #[derive(serde::Deserialize)]
+        struct IdRow {
+            id: RecordId,
+        }
+        let rows: Vec<IdRow> = user_q.take(0).map_err(|e| e.to_string())?;
+        let record = rows
+            .into_iter()
+            .next()
+            .ok_or_else(|| format!("No user found with username “{}”", username))?;
+        let user_id_str = record.id.to_string();
+
+        // 2) Try to fetch any existing tokens for that ID
+        let mut tokens = self.get_access_tokens_for_user(user_id_str.clone()).await;
+        if let Some(token) = tokens.pop() {
+            return Ok(token);
+        }
+
+        // 3) No token found → generate & persist a brand‑new one
+        let new_token = Uuid::new_v4().to_string();
+        self.create_access_token(user_id_str, new_token).await
+    }
+
+    pub async fn create_user(&self, mut user: User) -> Result<User, String> {
+        let salt = SaltString::generate(&mut OsRng);
+        let argon2 = Argon2::default();
+        let password_hash = argon2
+            .hash_password(&user.password.as_bytes(), &salt)
+            .unwrap()
+            .to_string();
+        user.password = password_hash.into();
+
+        let id = Uuid::new_v4().to_string();
         let record = self
             .conn
             .create::<Option<User>>(("users", id))

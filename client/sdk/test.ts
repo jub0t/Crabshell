@@ -3,7 +3,14 @@ import Crabshell from './index';
 import express from 'express';
 const app = express();
 
-const can = new Crabshell(`127.0.0.1:50051`)
+const can = new Crabshell({
+    address: "127.0.0.1",
+    port: 50051,
+    auth: {
+        password: "admin123",
+        username: "admin",
+    }
+})
 const call = can.core.Clients.broadcast.Subscribe({});
 
 call.on('data', (response: { message: string }) => {

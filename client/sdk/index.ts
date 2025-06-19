@@ -62,8 +62,15 @@ export class Bot {
 
 class Crabshell {
     core: CoreAbstraction
-    constructor(address: string) {
-        this.core = new CoreAbstraction(address)
+    constructor(options: {
+        address: string,
+        port: string | number,
+        auth?: {
+            username: string,
+            password: string,
+        }
+    }) {
+        this.core = new CoreAbstraction(`${options.address}:${options.port}`)
     }
 
     async find_bot_by_id(botId: string): Promise<Bot | null> {

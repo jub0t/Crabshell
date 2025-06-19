@@ -1,6 +1,8 @@
 use application::{config::ManagerConfig, manager::BotManager};
 use core::StartAPIOptions;
+use std::sync::Arc;
 use surrealdb::{engine::local::Mem, Surreal};
+use tokio::sync::Mutex;
 use utils::thead::to_arc_mutex;
 
 pub mod application;
@@ -18,7 +20,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     connection.use_ns("test").use_db("test").await?;
 
     let db = database::new(connection).await?;
-    let safe_db = to_arc_mutex(db);
+    let safe_db = Arc::new(Mutex::new(db));
 
     // TODO: maybe we move this function to init command on CLI
     match storage::doctor::establish_master_directory() {
